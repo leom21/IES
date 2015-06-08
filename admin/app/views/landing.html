@@ -1,0 +1,13 @@
+<div class="adminLogin" ng-controller="adminCtrl">
+    <h1>IES admin login</h1>
+    <form name="adminLoginForm" ng-submit="adminLoginF(adminLoginForm)">
+        Username:<br/>
+        <input type="text" name="username" ng-model="username">
+        Password:<br/>
+        <input type="password" name="password" ng-model="password">
+        <br/>
+        <input type="submit" value="Login">
+        <br/>
+        <span id="warning"></span>
+    </form>
+</div>

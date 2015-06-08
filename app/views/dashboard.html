@@ -1,0 +1,33 @@
+<div class="page" ng-controller="dashboardCtrl">
+    <div class="dashBoardMenu">
+        <ul>
+            <li class="logo">
+                IES
+            </li>
+            <li>
+                <a ui-sref=".query">
+                    Query
+                </a>
+            </li>
+            <li>
+                <a ui-sref=".positions">
+                    My positions
+                </a>
+            </li>
+            <li>
+                <a ui-sref=".watchlist">
+                    My watch list
+                </a>
+            </li>
+            <li style="float:right; margin-top:8.2px; text-align:right; margin-right:-12px;">
+                <img style="margin-right: 25px; height: 27px; display: inline-block; vertical-align: middle; margin-top: -3px;" src="gfx/IAlogo.png" alt="IntelAgent LTD">
+                <span ng-click="logout()" style="cursor:pointer;">
+                    Logout
+                </span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="innerView" ui-view autoscroll="false">
+    </div>
+</div>

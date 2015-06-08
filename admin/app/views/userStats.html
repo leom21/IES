@@ -1,0 +1,29 @@
+<div class="userStats">
+    <input type="button" class="close" value="Close" ng-click="closeStats()">
+    <div class="cont">
+        <h2>
+            Statistics for {{name}}
+        </h2>
+        <br/>
+
+        <div class="ips">
+            <b style="margin-left:27px;">
+                Number of IPs: {{numIps.length}}
+            </b>
+            <br/>
+            <ul>
+                <li ng-repeat="ip in numIps">
+                    {{ip}}
+                </li>
+            </ul>
+        </div>
+
+        <h2 style="font-size:20px;">
+            Stock history:
+        </h2>
+        <div class="graph" style="height:430px;">
+            <svg class="chart">
+            </svg>
+        </div>
+    </div>
+</div>

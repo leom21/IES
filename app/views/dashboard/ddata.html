@@ -1,0 +1,280 @@
+<div class="loadingView">
+    Loading data, please wait.
+    <br/>
+    <!--<span class="loadP">-->
+    <!--0%-->
+    <!--</span>-->
+</div>
+<div class="searchContainer">
+    <form name="SSF" ng-submit="moveToStock(searchQ)" novalidate>
+        <div class="stockSearch sDiv">
+            <div ng-mouseleave="closeMe = true; focus = false;" ng-mouseenter="focus = true;" style="padding:0px 15px;">
+                <p>
+                    Stock: 
+                    <br/>
+                </p>
+                <div class="bar">
+                    <div class="value"></div>
+                    <div class="progress">
+                    </div>
+                </div>
+                <div class="showHistoryList" ng-click="dropDownList(); closeMe = false;">
+                    &#9660;
+                </div>
+                <input type="text" ng-model="searchQ" class="srcQ searchQ" placeholder="Symbol" ng-keyup="showList($event); closeMe = true;" ng-focus="focus = true;"> 
+                <p>
+                    <span class="symE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
+                    </span>
+                </p>
+                <ul class="searchHistoryList" ng-hide="closeMe == true">
+                    <li ng-repeat="q in searchHistory track by $index| limitTo:5" ng-click="clickedStock(q.q)">
+                        {{q.q}}
+                    </li>
+                </ul>
+                <ul class="searchHistory" ng-if="focus == true">
+                    <li ng-repeat="q in universe| searchHistory:searchQ" ng-click="clickedStock(q.symbol)">
+                        {{q.symbol}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="stockSearch sDiv">
+            <p>
+                Held quantity:<br/>
+            </p>
+            <input type="number" value="" min="100" ng-model="hQty" class="hQty searchQ" ng-focus="closeMe = true; focus = false; (searchQ.length > 0)? hQty = 100 : ''">
+            <p>
+                <span class="qtyE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
+                </span>
+            </p>
+        </div>
+        <div class="stockSearch sDiv">
+            <p>
+                Target Price:<br/>
+            </p>
+            <input type="text" class="searchQ" ng-focus="closeMe = true; focus = false"> 
+        </div>
+        <div class="stockSearch sDiv">
+            <p>
+                Term:<br/>
+            </p>
+            <input type="text" class="searchQ" ng-focus="closeMe = true; focus = false"> 
+        </div>
+        <input type="submit" value="Find">
+    </form>
+</div>
+
+<div class="uberContainer">
+    <div class="stockData" ng-controller="stockdataCtrl">
+        <div class="msg" ng-show="noR == true">
+            <br/><br/>
+            We are sorry, the symbol <b>{{symbol}}</b> doesn't exist. <br/>
+            Please try a different one or check your query.
+            <br/><br/><br/><br/>
+        </div>
+        <table ng-show="!noR" style="width:48.4%;">
+            <tr>
+                <td ng-if="gotPosition == true">
+                    <h3>
+                        {{symbol}}
+                    </h3>
+                </td>
+                <td ng-if="!gotPosition" colspan="1">
+                    <h3>
+                        {{symbol}}
+                    </h3>
+                </td>
+                <td ng-if="!gotPosition" colspan="1">
+                    <h3 style="font-size:22px; text-align: right; margin-right:-2px; margin-top:6px;">
+                        Best score: {{stockData.Options[0].Score}}
+                    </h3>
+                </td>
+            </tr>
+        </table>
+        <div class="watchList" ng-click="addToWL(symbol)" ng-show="!noR">
+            <span ng-hide="onList == true">
+                <img src="gfx/watchlist.png" alt="Add to my watch list" />
+                Add to my watch list
+            </span>
+        </div>
+        <div class="watchList" ng-click="removeWL(symbol)" ng-show="!noR">
+            <span ng-show="onList == true">
+                Remove from watch list.
+            </span>
+        </div>
+
+        <div class="graph" ng-show="!noR">
+            <div class="caption">
+                <div ng-if="!gotPosition">
+                    Price/Profit distribution 
+                </div>
+                <div ng-if="gotPosition == true">
+                    PnL 
+                </div>
+            </div>
+
+            <table style="font-weight: bolder; margin: 0px 10px -10px;">
+                <tr>
+                    <td>
+                        Stock
+                    </td>
+                </tr>
+            </table>
+
+            <table class="dataContainer stockD">
+                <tr class="title" style="color:#fff">
+                    <td style="font-size:12px !important;">
+                        Symbol   
+                    </td>
+                    <td style="font-size:12px !important;">
+                        Industry
+                    </td>
+                    <td style="font-size:12px !important;">
+                        Company
+                    </td>
+                    <td style="font-size:12px !important;">
+                        Market Cap
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{stockData.Symbol}}   
+                    </td>
+                    <td>
+                        {{stockData.Industry}}   
+                    </td>
+                    <td>
+                        {{stockData.CompanyName}}
+                    </td>
+                    <td>
+                        {{stockData.MktCapB| number:0}}Bn   
+                    </td> 
+                </tr>
+                <tr style="color:#fff">
+                    <td style="font-size:12px !important;">
+                        Last
+                    </td>
+                    <td style="font-size:12px !important;">
+                        Vlt
+                    </td>
+                    <td style="font-size:12px !important;">
+                        Rating
+                    </td>
+                    <td style="font-size:12px !important;">
+                        ShtR
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        {{stockData.Last}}   
+                    </td>
+                    <td>
+                        {{cut(stockData.Vlt * 100)}}%   
+                    </td>
+                    <td>
+                        {{stockData.Rating}}   
+                    </td>
+                    <td>
+                        {{stockData.ShtR}}   
+                    </td>
+                </tr>
+            </table>
+
+            <table style="font-weight: bolder; margin: 0px 10px -10px; clear:both;" ng-if="!gotPosition">
+                <tr>
+                    <td>
+                        Option
+                    </td>
+                </tr>
+            </table>
+
+            <table style="font-weight: bolder; margin: 0px 10px -10px; clear:both;" ng-if="gotPosition == true">
+                <tr>
+                    <td>
+                        Position - {{position.Name}}
+                    </td>
+                </tr>
+            </table>
+
+            <table class="dataContainer stockR" ng-if="!gotPosition">
+                <tr class="title" style="color:#fff">
+                    <td colspan="3" style="font-size:12px !important;">
+                        Strike
+                    </td>
+                    <td colspan="3" style="font-size:12px !important;">
+                        Expiry
+                    </td>
+                    <td colspan="2" style="font-size:12px !important;">
+                        Score
+                    </td>
+                    <td colspan="2" style="font-size:12px !important;">
+                        Expected yield
+                    </td>
+                    <td style="font-size:12px !important;">
+                        Break price
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        {{position.Type + "" + position.Strike}} 
+                    </td>
+                    <td colspan="3">
+                        {{editDate(position.Expiry) | date: "dd/MM/yy"}}
+                    </td>
+                    <td colspan="2">
+                        {{position.Score}} 
+                    </td>
+                    <td colspan="2">
+                        {{cut(position.Pot * 100)}}%   
+                    </td>
+                    <td>
+                        {{(position.Bid + position.Ask) / 2 + position.Strike | number:2}}   
+                    </td>
+                </tr>
+            </table>
+            <br/>
+            <div class="stockTableContainer" ng-if="!gotPosition">
+                <br/>
+                <table class="stockInnerData">
+                    <thead>
+                        <tr class="thead" style="font-size:12px !important;">
+                            <td>T</td>
+                            <td>Strike</td>
+                            <td>Expiry</td>
+                            <td>Days</td>
+                            <td>Period Volatility</td>
+                            <td>Implied Volatility</td>
+                            <td>Break move</td>
+                            <td>Annual Yield</td>
+                            <td>Leg Price</td>
+                            <td style="color:#fff; background:#94A59F ;">Score</td>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="data in stockData.Options" ng-click="reDrawGraph($index, data)" ng-class="{'selected':$index == selectedRow || selectedRow == null && $index == 0}">
+                            <td>{{data.Type}}</td>
+                            <td>{{data.Strike}}</td>
+                            <td>{{editDate(data.Expiry) | date: "dd/MM/yy"}}</td>
+                            <td>{{data.Days}}</td>
+                            <td>{{cut(data.PVol * 100)}}%</td>
+                            <td>{{cut(data.Iv * 100)}}%</td>
+                            <td>{{cut(data.Brk * 100)}}%</td>
+                            <td>{{cut(data.AnnPot * 100)}}%</td>
+                            <td>{{(data.Bid + data.Ask)/2 | currency}}</td>
+                            <td style="color:#fff; background:#94A59F;">{{data.Score}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <options-section data="userPositions" position="position" symbol="symbol" index="selectedRow" stocksOpt="optionsD" heldQ="held" stockData="stockData">
+            </options-section>
+            <line-chart ng-if="!gotPosition" id="linear" data="position" optionS="optionS" type="'linear'" moData="moData"></line-chart>
+            <line-chart ng-if="!gotPosition" id="bell" data="position" type="'bell'" kind="'reg'"></line-chart>
+
+            <historyd-chart ng-if="gotPosition == true" id="bellR2" data="historyData" position="userPositions"></historyd-chart>
+            <br/>
+        </div>
+
+    </div>
+</div>

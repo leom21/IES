@@ -1,0 +1,222 @@
+<div class="positionData">
+    <!--    <div class="takePosition" ng-click="scrollPositon();
+            takePosition(index, validate, fData)">
+            Take position
+        </div>-->
+    <!--{{position}}-->
+
+
+    <form ng-model="takeP" ng-init="takeP.optionName = position.Type + '' + position.Strike">
+        <table class="takePositionT" ng-show="!gotPositionD">
+            <!--            <tr>
+                            <td style="text-align:left; padding:4px; 0px 5px 5px; display:none;">
+                                Take option {{takeP.optionName = position.Type + "" + position.Strike}} (Price: {{takeP.optionPrice = (position.Bid + position.Ask) / 2 | currency}}):
+                            </td></tr>-->
+            <tr>
+                <!--<td>-->
+                <!--<input type="text" placeholder="Option name" ng-model="takeP.optionName" ng-change="isChanged(takeP)" disabled>-->
+                <!--<div ng-model="takeP.optionName" ng-change="isChanged(takeP)" style="padding: 0px 8px 10px;">{{position.Type + "" + position.Strike}}:--> 
+                <!--                        {{takeP.optionPrice = (position.Bid + position.Ask) / 2 | currency}}-->
+                <!--</div>-->
+                <!--</td>-->
+                <!--<td>-->
+                <!--<input type="number" min="0" step="100" style="width:110px;" placeholder="Options' price" ng-model="takeP.optionPrice" ng-change="isChanged(takeP)"> $-->
+                <!--</td>-->
+                <td colspan="6" style="margin:-10px 0px 10px 0px; padding-bottom:10px; padding-top:0px;">
+                    {{position.Name}}
+                </td>
+            </tr>
+            <tr>
+                <td style="font-size:12px;">
+                    Stock Quantity:
+                    <br/> 
+                    <input type="number" style="width:80px;" min="100" step="100" placeholder="Stock Quantity" ng-model="takeP.qty" ng-change="isChanged(takeP)">
+                </td>
+                <td style="font-size:12px;">
+                    Quantity:
+                    <br/> 
+                    <!--<input type="number" style="width:80px;" min="1" step="1" placeholder="Options Quantity" ng-value="takeP.optQty = takeP.qty / 100" ng-model="takeP.optQty" ng-change="isChanged(takeP)" readonly>-->
+                    <input type="number" style="width:80px;" min="1" step="1" placeholder="Options Quantity" ng-value="optQty = optQ()" ng-model="optQty" ng-change="isChanged(takeP)" readonly>
+                </td>
+                <td style="font-size:12px;">
+                    <span>
+                        Option price:
+                    </span><br/>
+                    <input type="text" style="width:90px;" placeholder="Reflected price" ng-model="takeP.refPrice" ng-change="isChanged(takeP)">
+                </td>
+                <td style="font-size:12px;">
+                    <span>
+                        Premium value:
+                    </span><br/>
+                    <input type="text" placeholder="Premium price" ng-value="premiumP = premium()" ng-model="premiumP" ng-change="isChanged(takeP)">
+                </td>
+                <td>
+                    <div ng-if="taken == taken" class="takePosition" ng-click="scrollPositon();
+                        takePosition(index, validate, fData, $event);
+                        taken = !taken">
+                        Take position
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <!--
+        <table class="dataContainer userP" style="margin:0px 10px 10px 10px; !important" ng-show="gotPositionD == true">
+            <tr class="title" style="color:#fff; font-size:12px;">
+                <td colspan="2" style="font-size:12px !important;">
+                    Leg
+                </td>
+                <td colspan="2" style="font-size:12px !important;">
+                    Entry price
+                </td>
+                <td colspan="2" style="font-size:12px !important;">
+                    Current
+                </td>
+                <td  colspan="2" style="font-size:12px !important;">
+                    P&L
+                </td>
+            </tr>
+            <tr ng-repeat="pos in arr">
+                <td colspan="2">
+                    {{pos.optionName}} {{editDate(pos.expiry) | date: "dd/MM/yy"}}
+                    {{pos.optionName}} {{editDate(exp) | date: "dd/MM/yy"}}
+                </td>
+                <td colspan="2">
+                    {{pos.optionPrice| currency}}
+                </td>
+                <td colspan="2">
+                    {{currPrc| currency}}
+                </td>
+                <td colspan="2">
+                    {{pnl(currPrc, pos.optionPrice)}}
+                </td>
+            </tr>
+        </table>-->
+
+
+    <table class="dataContainer userP" style="margin:0px 10px 10px 10px; !important" ng-show="gotPositionD == true">
+        <tr class="title" style="color:#fff; font-size:12px;">
+            <td colspan="2" style="font-size:12px !important;">
+                Stock Quantity
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Stock Avg Price
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Break Price
+            </td>
+            <td  colspan="2" style="font-size:12px !important;">
+                Stock Last
+            </td>
+            <td style="font-size:12px !important;">
+                Stock % Change
+            </td>
+            <td style="font-size:12px !important;">
+                Original Score
+            </td>
+        </tr>
+        <tr ng-repeat="pos in arr">
+            <td colspan="2">
+                <!--{{pos.optionName}} {{editDate(pos.expiry) | date: "dd/MM/yy"}}-->
+                {{pos.qty}}
+            </td>
+            <td colspan="2">
+                {{pos.stockLast| currency}}
+            </td>
+            <td colspan="2">
+                {{pos.break| currency}}
+            </td>
+            <td colspan="2">
+                {{stData.Last| currency}}
+            </td>
+            <td>
+                {{pnl(pos.stockLast, stData.Last)}}
+            </td>
+            <td>
+                {{pos.oScore}}
+            </td>
+        </tr>
+    </table>
+
+
+    <table class="dataContainer userP" style="margin:0px 10px 10px 10px; !important" ng-show="gotPositionD == true">
+        <tr class="title" style="color:#fff; font-size:12px;">
+            <td colspan="2" style="font-size:12px !important;">
+                Option Quantity
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Option Avg Price
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Option Last
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Option % Change
+            </td>
+            <td style="font-size:12px !important;">
+                Days to Expiry
+            </td>
+        </tr>
+        <tr ng-repeat="pos in arr">
+            <td colspan="2">
+                {{pos.optQty}}
+            </td>
+            <td colspan="2">
+                {{pos.optionPrice| currency}}
+            </td>
+            <td colspan="2">
+                {{position.Last| currency}}
+            </td>
+            <td colspan="2">
+                {{pnl(pos.optionPrice, position.Last)}}
+            </td>
+            <td colspan="2">
+                {{expiry(pos.expiry)}} days
+            </td>
+        </tr>
+    </table>
+
+
+    <table class="dataContainer userP" style="margin:0px 10px 10px 10px; !important" ng-show="gotPositionD == true">
+        <tr class="title" style="color:#fff; font-size:12px !important;">
+            <td colspan="2" style="font-size:12px !important;">
+                Position Period
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Stock PnL
+            </td>
+            <td colspan="2" style="font-size:12px !important;">
+                Option PnL
+            </td>
+            <td  colspan="2" style="font-size:12px !important;">
+                Total PnL
+            </td>
+        </tr>
+        <tr ng-repeat="pos in arr">
+            <td colspan="2">
+                {{period(pos.entry)}} days
+            </td>
+            <td colspan="2">
+                {{pnl(pos.stockLast, stData.Last)}}
+            </td>
+            <td colspan="2">
+                {{pnl(pos.optionPrice, position.Last)}}
+            </td>
+            <td colspan="2">
+                {{totalPnl(pnl(pos.stockLast, stData.Last), pnl(pos.optionPrice, position.Last))}}
+            </td>
+        </tr>
+    </table>
+
+    <table class="takePositionT" ng-show="gotPositionD == true" style="margin-top:10px;margin-top:10px;">
+        <tr>
+            <td colspan="4"></td>
+            <td colspan="1" style="width:120px;">
+                <div class="deletePosition" ng-click="deletePosition(arr, symbol)" ng-show="gotPositionD == true">
+                    Remove position
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

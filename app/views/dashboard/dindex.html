@@ -1,0 +1,94 @@
+<!--<div class="loading">
+    <img class="loader" src="gfx/loader.gif" alt="IES - please wait">
+    <div class="pleaseW">Please wait.</div>
+</div>-->
+<!--<div class="mobileContainer">
+    <table class="dataContainer">
+        <tr class="stockList">
+            <td>
+                Symbol   
+            </td>
+            <td>
+                Industry
+            </td>
+            <td>
+                Last
+            </td>
+            <td>
+                Vlt
+            </td>
+            <td>
+                Position
+            </td>
+            <td>
+                Score
+            </td>
+            <td>
+                Leg
+            </td>
+            <td>
+                Rating
+            </td>
+            <td>
+                TgPrc
+            </td>
+            <td>
+                ShtR
+            </td>
+            <td>
+                MktCapB
+            </td>
+        </tr>
+        <tr ng-repeat="stock in stocks| customerPagination:startLimit:endLimit" ng-click="moveToStock(stock.symbol, stock)">
+            <td>
+                {{stock.symbol}}   
+            </td>
+            <td>
+                {{stock.industry}}   
+            </td>
+            <td>
+                {{stock.last}}   
+            </td>
+            <td>
+                {{stock.vlt}}%   
+            </td>
+            <td>
+                {{stock.position}}$   
+            </td>
+            <td>
+                {{stock.score}}%   
+            </td>
+            <td>
+                {{stock.leg}}   
+            </td>
+            <td>
+                {{stock.rating}}   
+            </td>
+            <td>
+                {{stock.tgprc}}   
+            </td>
+            <td>
+                {{stock.shtr}}   
+            </td>
+            <td>
+                {{stock.mktcapb}}   
+            </td>
+        </tr>
+    </table>
+
+    <div class="results" ng-show="stocks.length > 0">
+        <div class="pagination">
+            <div class="pages">
+                <ul>
+                    <li>Showing <b>{{showing()}}</b> of <b>{{stocks.length}}</b> results.</li>
+                    <li class="pagesC">Page: <b>{{currentPage}}</b> of <b>{{outOfPages()}}</b></li>
+                    <li class="prev" ng-if="currentPage > 1" ng-click="prevPage()"><<</li>
+                    <li ng-repeat="pageLink in pagesCount track by $index">
+                        <button ng-click="moveToPage($index)">{{pageLink.number}}</button>
+                    </li>
+                    <li class="next" ng-if="currentPage < pagesCount.length" ng-click="nextPage()">>></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>-->

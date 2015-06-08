@@ -1,0 +1,33 @@
+<div class="page">
+    <div class="topContainer">
+        <h1 ui-sref=".index">
+            <img src="gfx/IAlogo.png" alt=""/>
+            IES
+        </h1>
+    </div>
+
+    <div class="signIn" ng-controller="loginCtrl">
+        <h2>
+            Login
+        </h2>
+        <form name="signInForm" ng-submit="userLogin(signInForm)">
+            <input type="text" ng-model="liUN" name="username" placeholder="Username" class="usr">
+            <input type="password" ng-model="liPWD" name="pwd" placeholder="Password" class="pwd">
+            <input type="submit" value="Login">
+            <div id="warning" style="color:red;"></div>
+        </form>
+    </div>
+    <div class="bottomBar">
+        <ul>
+            <li>
+                About
+            </li>
+            <li style="padding:0px 25px;">
+                &bull;
+            </li>
+            <li>
+                Support
+            </li>
+        </ul>
+    </div>
+</div>

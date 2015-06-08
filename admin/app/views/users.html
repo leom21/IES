@@ -1,0 +1,184 @@
+<div class="users">
+    <h1>
+        User management.
+    </h1>
+    <p>
+        In this panel you can add\edit\delete admins and users.
+    </p>
+
+    <section id="admins">
+        <h2>
+            Admins ({{admins.length}})
+        </h2>
+        <div class="addUser" ng-click="aa(1)">
+            Add new admin
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <td>
+                        Actions
+                    </td>
+                    <td>
+                        Name
+                    </td>
+                    <td>
+                        Username
+                    </td>
+                    <td>
+                        Password
+                    </td>
+                    <td>
+                        Email
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="admin in admins" ng-class="{
+                            blocked: admin.blocked == 1
+                        }">
+                    <td>
+                        <select class="selectL" ng-change="optionPick(options, admin)" ng-model="options">
+                            <option value="none"></option>
+                            <option>Edit</option>
+                            <option>Delete</option>
+                            <option ng-if="admin.blocked == 0">Block</option>
+                            <option ng-if="admin.blocked == 1">Unblock</option>
+                        </select>
+                    </td>
+                    <td>
+                        {{admin.name}}
+                        <span class="isBlocked">
+                            {{(admin.blocked == 1) ? "(BLOCKED)" : ""}}
+                        </span>
+                    </td>
+                    <td>
+                        {{admin.username}}
+                    </td>
+                    <td>
+                        {{admin.password}}
+                    </td>
+                    <td>
+                        {{admin.email}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section id="users">
+        <h2>
+            Users ({{users.length}})
+        </h2>
+        <div class="addUser" ng-click="aa(0)">
+            Add new user
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <td>
+                        Actions
+                    </td>
+                    <td>
+                        Name
+                    </td>
+                    <td>
+                        Username
+                    </td>
+                    <td>
+                        Password
+                    </td>
+                    <td>
+                        Email
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="user in users" ng-class="{
+      
+                        blocked: user.blocked == 1
+                        }">
+                    <td>
+                        <select class="selectL" ng-change="optionPick(options, user)" ng-model="options">
+                            <option value=""></option>
+                            <option>Edit</option>
+                            <option>Delete</option>
+                            <option ng-if="user.blocked == 0">Block</option>
+                            <option ng-if="user.blocked == 1">Unblock</option>
+                            <option>Statistics</option>
+                        </select>
+                    </td>
+                    <td>
+                        {{user.name}} 
+                        <span class="isBlocked">
+                            {{(user.blocked == 1) ? "(BLOCKED)" : ""}}
+                        </span>
+                    </td>
+                    <td>
+                        {{user.username}}
+                    </td>
+                    <td>
+                        {{user.password}}
+                    </td>
+                    <td>
+                        {{user.email}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+
+    <!--User window-->
+    <div class="editUser">
+        <h3>
+            {{action}} {{currUser.name}}
+        </h3>
+        <form name="editUser" ng-submit="editUserF(editUser)">
+            <table class="editUserT">
+                <tr>
+                    <td>
+                        Name:
+                    </td>
+                    <td>
+                        <input type="text" name="editName" value="{{currUser.name}}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Username:
+                    </td>
+                    <td>
+                        <input type="text" name="editUsername" value="{{currUser.username}}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Password:
+                    </td>
+                    <td>
+                        <input type="text" name="editPassword" value="{{currUser.password}}">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Email:
+                    </td>
+                    <td>
+                        <input type="text" name="editEmail" value="{{currUser.email}}">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input class="cancel" type="button" value="Cancel" ng-click="closeUserEdit()">
+                        <input class="submit" type="submit" value="Save">
+                    </td>
+                </tr>
+            </table>
+        </form>
+        </h3>
+    </div>
+    <user-stats active="active" user="statsUser">
+    </user-stats>
+</div>
