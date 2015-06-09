@@ -1,68 +1,9 @@
 <div class="loadingView" ng-if="hasPosition == false">
     Loading data, please wait.
     <br/>
-    <!--<span class="loadP">-->
-    <!--0%-->
-    <!--</span>-->
 </div>
-<div class="searchContainer">
-    <form name="SSF" ng-submit="moveToStock(searchQ)" novalidate>
-        <div class="stockSearch sDiv">
-            <div ng-mouseleave="closeMe = true; focus = false;" ng-mouseenter="focus = true;" style="padding:0px 15px;">
-                <p>
-                    Stock: 
-                    <br/>
-                </p>
-                <div class="bar">
-                    <div class="value"></div>
-                    <div class="progress">
-                    </div>
-                </div>
-                <div class="showHistoryList" ng-click="dropDownList(); closeMe = false;">
-                    &#9660;
-                </div>
-                <input type="text" ng-model="searchQ" class="srcQ searchQ" placeholder="Symbol" ng-keyup="showList($event); closeMe = true;" ng-focus="focus = true;"> 
-                <p>
-                    <span class="symE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
-                    </span>
-                </p>
-                <ul class="searchHistoryList" ng-hide="closeMe == true">
-                    <li ng-repeat="q in searchHistory track by $index| limitTo:5" ng-click="clickedStock(q.q)">
-                        {{q.q}}
-                    </li>
-                </ul>
-                <ul class="searchHistory" ng-if="focus == true">
-                    <li ng-repeat="q in universe| searchHistory:searchQ" ng-click="clickedStock(q.symbol)">
-                        {{q.symbol}}
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="stockSearch sDiv">
-            <p>
-                Held quantity:<br/>
-            </p>
-            <input type="number" value="" min="100" class="hQty searchQ" ng-model="hQty" ng-focus="closeMe = true; focus = false; (searchQ.length> 0)? hQty = 100 : ''">
-            <p>
-                <span class="qtyE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
-                </span>
-            </p>
-        </div>
-        <div class="stockSearch sDiv">
-            <p>
-                Target Price:<br/>
-            </p>
-            <input type="text" class="searchQ" ng-focus="closeMe = true; focus = false"> 
-        </div>
-        <div class="stockSearch sDiv">
-            <p>
-                Term:<br/>
-            </p>
-            <input type="text" class="searchQ" ng-focus="closeMe = true; focus = false"> 
-        </div>
-        <input type="submit" value="Find">
-    </form>
-</div>
+<ng-include src="'app/views/dashboard/searchBar.html?i=1001'">
+</ng-include>
 
 <div class="stocksArea" ng-controller="stockCtrl">
     <h1>

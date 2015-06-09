@@ -16,7 +16,6 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                     }
                 });
 
-
                 $rootScope.$watch("stockData", function (o) {
                     if (o !== undefined) {
                         scope.stData = $rootScope.stockData;
@@ -121,13 +120,14 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                         var d = new Date().getDate();
 
                         var takePos = new pos(scope.symbol, scope.position, scope.index, scope.takeP);
-                        console.log(takePos);
                         dashboardFactory.takePosition(takePos).then(function (d) {
                             if (d == "OK") {
                                 $rootScope.gotPosition = true;
-                                $timeout(function () {
-                                    $state.go($state.current, {}, {reload: true});
-                                }, 200);
+//                                $timeout(function () {
+//                                    $state.go($state.current, {}, {reload: true});
+                                    location.reload();
+                                    console.log("Position taken.");
+//                                }, 1000);
                             }
                         });
                     }
@@ -167,7 +167,6 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                                     });
 
                                     scope.CstockLast = $rootScope.stockLast;
-
                                     scope.totalPnl = function (s, o) {
                                         return parseFloat(s) + parseFloat(o) + "%";
                                     };

@@ -1,5 +1,6 @@
 var dashboardServices = angular.module("dashBoardServicesModule", []);
-dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$q", "$rootScope", function (dashboardFactory, $state, $state, $http, $q, $rootScope) {
+
+dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$q", "$rootScope", function (dashboardFactory, $state, $stateParams, $http, $q, $rootScope) {
 //    localStorage.removeItem("tracker");
 //    localStorage.removeItem("userDefs");
 //    localStorage.removeItem("searchHistory");
@@ -11,21 +12,29 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                     $(".footer").css("top", h - 18 + "px");
                 });
 
-        $rootScope.$on('$stateChangeStart',
+        $rootScope.idleTime = 0;
+
+
+        $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
                     if (toState.data.secured) {
                         if (toState.data.secured == true) {
                             if (localStorage["userDefs"] == null || localStorage["userDefs"] == 0 || !localStorage["userDefs"] || localStorage["userDefs"] == undefined) {
-                                $state.go("/");
+                                if ($state.current.name !== "/") {
+                                    $state.transitionTo("/");
+                                }
                             } else {
-                                var getTime = {value: "value", timestamp: new Date().getTime()};
-                                var currTime = new Date().getTime();
-                                new Date().getTime();
-                                var sess = JSON.parse(localStorage["session"]).timestamp;
-                                localStorage.setItem("session", JSON.stringify(getTime));
-                                console.log(sess);
-                                if (sess - currTime > sess + 1 * 60000) {
-                                    dashboardFactory.logout();
+                                clearInterval($rootScope.idleInterval);
+                                $rootScope.idleInterval = setInterval(timerIncrement, 60000);
+                                function timerIncrement() {
+                                    $rootScope.idleTime = $rootScope.idleTime + 1;
+                                }
+                                if ($rootScope.idleTime > 20) {
+                                    if ($state.current.name !== "/") {
+                                        dashboardFactory.logout();
+                                    }
+                                } else {
+                                    $rootScope.idleTime = 0;
                                 }
                             }
                         }
@@ -44,9 +53,6 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                             $rootScope.sH = localStorage["searchHistory"];
                             $rootScope.optionsWatch = JSON.parse(localStorage["optionsWatch"]);
                             $rootScope.clickHistory = JSON.parse(localStorage["cH"]);
-//                            dashboardFactory.allStocks().then(function (d) {
-//                                $rootScope.allStocks = d;
-//                            });
                             if ($rootScope.sH == undefined || $rootScope.sH == null || $rootScope.sH == "null") {
                                 $rootScope.searchHistory = null;
                             } else {
@@ -65,6 +71,7 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                 }
         );
     }]);
+
 dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", "$rootScope", "$timeout", function ($log, $http, $q, $state, $rootScope, $timeout) {
         return{
             loginUser: function (username, password) {
@@ -111,6 +118,8 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                         });
             },
             logout: function () {
+                $rootScope.idleTime = 0;
+                $state.transitionTo("/");
                 localStorage.removeItem("userDefs");
                 localStorage.removeItem("searchHistory");
                 localStorage.removeItem("uP");
@@ -126,8 +135,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
 //                delete $rootScope.sH;
 //                delete $rootScope.optionsWatch;
 //                delete $rootScope.clickHistory;
-                $state.go("/");
-
             },
             searchHistory: function (id) {
                 var def = $q.defer();
@@ -212,8 +219,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 if (Array.isArray(s) == false) {
                     s = [s];
                 }
-                console.log(s);
-
                 $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: s})
                         .success(function (IESdata) {
                             if (IESdata["d"].length > 0) {
@@ -244,7 +249,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 var def = $q.defer();
                 $http.post("../WebService/PortfolioWS.asmx/GetIESHistoryData", {symbol: s, startDate: d, optionSymbol: n})
                         .success(function (hisData) {
-                            console.log(hisData["d"]);
                             $(".loadingView").delay(400).fadeOut(150);
                             return def.resolve(hisData["d"]);
                         })
@@ -258,11 +262,9 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             },
             insertSearch: function (s) {
                 if (s) {
-//                    console.log(s);
-                    s = s.toUpperCase();
+                    s = s[0].toUpperCase();
                     function send(id, sh) {
                         var data = {id: id, q: sh};
-                        console.log(data);
                         $http.post("app/php/dashboardApi.php", {act: "newHistory", data: data})
                                 .success(function (d) {
                                     if (d.length > 0) {
@@ -274,7 +276,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                             }
                                         });
                                         $rootScope.searchHistory = hArr;
-                                        console.log($rootScope.searchHistory);
                                         localStorage.setItem("searchHistory", d);
 //                                        $rootScope.sH = d;
                                     }
@@ -288,16 +289,13 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                         var sHa = $rootScope.sH.split(",");
                         if (sHa.indexOf(s) == -1) {
                             if (sHa.length == 5) {
-                                console.log(sHa);
                                 sHa.splice(4, 1);
                                 sHa.unshift(s);
                                 sHa = sHa.toString();
-                                console.log(sHa);
                                 send($rootScope.userId, sHa);
                             } else {
                                 $rootScope.sH += "," + s;
                                 var sh = $rootScope.sH;
-                                console.log(sh);
                                 send($rootScope.userId, sh);
                             }
                         }
@@ -414,7 +412,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                         .success(function (d) {
                             localStorage.setItem("uP", JSON.stringify(d));
                             $rootScope.userPositions = JSON.parse(localStorage["uP"]);
-                            console.log($rootScope.userPositions);
                             return def.resolve("OK");
                         });
                 return def.promise;

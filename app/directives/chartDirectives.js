@@ -461,26 +461,25 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
             link: function (scope, element, attrs) {
                 scope.$watch("data", function (o, n) {
                     if (o !== undefined) {
-                        $timeout(function () {
-                            angular.forEach(scope.position.positions, function (p) {
-                                if (p.stock === $rootScope.stockData.Symbol) {
-                                    scope.osLast = p.stockLast;
-                                    scope.opLast = p.optionPrice;
-                                    scope.entry = p.entry;
-                                }
-                            });
+                        angular.forEach(scope.position.positions, function (p) {
+                            if (p.stock === $rootScope.stockData.Symbol) {
+                                scope.osLast = p.stockLast;
+                                scope.opLast = p.optionPrice;
+                                scope.entry = p.entry;
+                            }
+                        });
 
-                            var data = [
-                                {key: "PnL",
-                                    values: [],
-                                    color: "#5d4750"
-                                }
-                            ];
+                        var data = [
+                            {key: "PnL",
+                                values: [],
+                                color: "#5d4750"
+                            }
+                        ];
 
-                            angular.forEach(scope.data, function (d, i) {
-                                var date = d.Date;
-                                date = date.substring(0, date.length - 2);
-                                date = date.substring(6, date.length);
+                        angular.forEach(scope.data, function (d, i) {
+                            var date = d.Date;
+                            date = date.substring(0, date.length - 2);
+                            date = date.substring(6, date.length);
 
 //                                var entry = new Date(scope.entry);
 //                                var fakeDay = (entry.setDate(entry.getDay()) + 24 + (1 * i));
@@ -488,122 +487,127 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
 //                                var fakeYear = entry.getFullYear();
 //                                var x = new Date(fakeMonth + "/" + fakeDay + "/" + fakeYear).getTime();
 
-                                var entry = new Date(scope.entry);
-                                var day = entry.getDate();
-                                var month = entry.getMonth();
-                                var year = entry.getFullYear();
-                                var time = month + 1 + "/" + parseInt(day) + "/" + year;
+                            var entry = new Date(scope.entry);
+                            var day = entry.getDate();
+                            var month = entry.getMonth();
+                            var year = entry.getFullYear();
+                            var time = month + 1 + "/" + parseInt(day) + "/" + year;
 
-                                var fixedd = new Date(time);
-                                var n = fixedd.setDate(fixedd.getDate() + (1 * i));
+                            var fixedd = new Date(time);
+                            var n = fixedd.setDate(fixedd.getDate() + (1 * i));
 
-                                var pnl = ((((d.LastStockPrice - d.LastOptionPrice) + scope.opLast) / scope.osLast) - 1);
+                            var pnl = ((((d.LastStockPrice - d.LastOptionPrice) + scope.opLast) / scope.osLast) - 1);
 
-                                data[0].values.push({x: n, y: pnl});
+                            data[0].values.push({x: n, y: pnl});
 //                                data[0].values.push({x: date, y: pnl});
-                            });
+                        });
 
-                            nv.addGraph(function () {
-                                var chart = nv.models.lineChart()
-                                        .margin({left: 50, right: 35, bottom: 100})
-                                        .useInteractiveGuideline(true)
-                                        .showLegend(false)
-                                        .showYAxis(true)
-                                        .showXAxis(true)
-                                        .x(function (d) {
-                                            return d.x;
-                                        });
-
-                                chart.xAxis.tickValues(function (d) {
-                                    var dateSets = [];
-                                    for (var i = 0; i < d[0]['values'].length; i++) {
-                                        dateSets.push(parseInt(d[0]['values'][i]['x']));
-                                    }
-                                    return dateSets;
-                                });
-
-                                chart.yAxis
-                                        .tickFormat(function (d) {
-                                            return d3.time.format(',.1%');
-                                        });
-
-                                chart.xAxis
-                                        .showMaxMin(false)
-                                        .tickFormat(function (d) {
-                                            return d3.time.format('%x')(new Date(d));
-                                        });
-
-                                chart.xAxis.rotateLabels(-45);
-                                var w = $(element.find("svg")[0]).width();
-                                var h = $(element.find("svg")[0]).height();
-                                $(document).on("mousemove", element.find("svg")[0], function () {
-                                    d3.select(".yLine").remove();
-                                    d3.select(".prc").remove();
-
-                                    var lw = $(".nv-y2").offset().left;
-                                    var bPos = $("#bellR2").find(".hover");
-                                    var leftOffset = $(bPos).offset().left;
-                                    var getEq = $(bPos).attr("class");
-                                    getEq = getEq.split("-")[3];
-                                    getEq = getEq.split(" ")[0];
-
-                                    var prc = ((data[0].values[getEq].y) * 100).toFixed(2);
-                                    var date = new Date(data[0].values[getEq].x);
-
-
-                                    var currentx = d3.transform(bPos.attr("transform")).translate[0];
-                                    var currenty = d3.transform(bPos.attr("transform")).translate[1];
-
-                                    if (lw == leftOffset || lw - leftOffset < 5) {
-                                        currentx = currentx - 65;
-                                    }
-
-                                    d3.select(element.find("svg")[0]).append("line")
-                                            .classed("yLine", true)
-                                            .style("stroke", "#ccc")
-                                            .attr("x1", "50")
-                                            .attr("y1", currenty + 30)
-                                            .attr("x2", "602")
-                                            .attr("y2", currenty + 30)
-                                            .transition()
-                                            .duration(800)
-                                            .attr("stroke-dasharray", "0,0");
-
-                                    d3.select(element.find("svg")[0]).append("text")
-                                            .classed("prc", true)
-                                            .attr("x", currentx + 80)
-                                            .attr("y", currenty + 25)
-                                            .style("text-anchor", "middle")
-                                            .text(prc + "%");
-                                });
-
-                                chart.yAxis
-                                        .tickValues(function (d) {
-                                            return d;
-                                        })
-                                        .tickFormat(d3.format(',.1%'));
-                                chart.y2Axis
-                                        .tickFormat(d3.format(',.1%'));
-
-                                d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
-                                        .attr("x", w / 2)
-                                        .attr("y", h - 10)
-                                        .style("text-anchor", "middle")
-                                        .text("Date");
-                                function draw(data) {
-                                    d3.select(element.find("svg")[0])
-                                            .datum(data)
-                                            .call(chart);
-                                    nv.utils.windowResize(function () {
-                                        chart.update();
+//                        $timeout(function () {
+                        nv.addGraph(function () {
+                            var chart = nv.models.lineChart()
+                                    .margin({left: 50, right: 35, bottom: 100})
+                                    .useInteractiveGuideline(true)
+                                    .showLegend(false)
+                                    .showYAxis(true)
+                                    .showXAxis(true)
+                                    .x(function (d) {
+                                        return d.x;
                                     });
-                                    return chart;
+
+                            chart.xAxis.tickValues(function (d) {
+                                var dateSets = [];
+                                for (var i = 0; i < d[0]['values'].length; i++) {
+                                    dateSets.push(parseInt(d[0]['values'][i]['x']));
                                 }
-                                draw(data);
+                                return dateSets;
                             });
-                        }, 300);
+
+                            chart.yAxis
+                                    .tickFormat(function (d) {
+                                        return d3.time.format(',.1%');
+                                    });
+
+                            chart.xAxis
+                                    .showMaxMin(false)
+                                    .tickFormat(function (d) {
+                                        return d3.time.format('%x')(new Date(d));
+                                    });
+
+                            chart.xAxis.rotateLabels(-45);
+                            var w = $(element.find("svg")[0]).width();
+                            var h = $(element.find("svg")[0]).height();
+
+//                                $(document).on("mousemove", element.find("svg")[0], function () {
+                            $(element.find("svg")[0]).on("mousemove", function () {
+                                d3.select(".yLine").remove();
+                                d3.select(".prc").remove();
+
+                                var lw = $(".nv-y2").offset().left;
+                                var bPos = $(element.find("svg")[0]).find(".hover");
+                                var leftOffset = $(bPos).offset().left;
+                                var getEq = $(bPos).attr("class");
+                                getEq = getEq.split("-")[3];
+                                getEq = getEq.split(" ")[0];
+
+                                var prc = ((data[0].values[getEq].y) * 100).toFixed(2);
+                                var date = new Date(data[0].values[getEq].x);
+
+                                var currentx = d3.transform(bPos.attr("transform")).translate[0];
+                                var currenty = d3.transform(bPos.attr("transform")).translate[1];
+
+                                if (lw == leftOffset || lw - leftOffset < 5) {
+                                    currentx = currentx - 65;
+                                }
+
+                                d3.select(element.find("svg")[0]).append("line")
+                                        .classed("yLine", true)
+                                        .style("stroke", "#ccc")
+                                        .attr("x1", "50")
+                                        .attr("y1", currenty + 30)
+                                        .attr("x2", "602")
+                                        .attr("y2", currenty + 30)
+                                        .transition()
+                                        .duration(800)
+                                        .attr("stroke-dasharray", "0,0");
+
+                                d3.select(element.find("svg")[0]).append("text")
+                                        .classed("prc", true)
+                                        .attr("x", currentx + 80)
+                                        .attr("y", currenty + 25)
+                                        .style("text-anchor", "middle")
+                                        .text(prc + "%");
+                            });
+
+//                                });
+
+                            chart.yAxis
+                                    .tickValues(function (d) {
+                                        return d;
+                                    })
+                                    .tickFormat(d3.format(',.1%'));
+                            chart.y2Axis
+                                    .tickFormat(d3.format(',.1%'));
+
+                            d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                                    .attr("x", w / 2)
+                                    .attr("y", h - 10)
+                                    .style("text-anchor", "middle")
+                                    .text("Date");
+                            function draw(data) {
+                                d3.select(element.find("svg")[0])
+                                        .datum(data)
+                                        .call(chart);
+                                nv.utils.windowResize(function () {
+                                    chart.update();
+                                });
+                                return chart;
+                            }
+                            draw(data);
+                        });
+//                        }, 300);
                     }
                 });
+                $compile(element.find("svg")[0])(scope);
             }
         };
     }]);

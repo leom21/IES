@@ -210,6 +210,7 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
             if (s == null) {
                 var s = $(".searchQ").val();
             }
+            
             searchEffect("show");
             dashboardFactory.searchStock(s).then(function (d) {
                 $timeout(function () {
@@ -233,15 +234,18 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
             var hQty = $(".hQty").val();
             var alphaExp = /^[a-zA-Z]+$/;
             var numExp = /^[0-9]+$/;
+
             if (!s) {
                 $(".symE").text("Please fill in a stock symbol.");
                 return false;
             }
+
             if (!s.match(alphaExp)) {
                 $(".symE").text("Only letters are allowd.");
                 $(".searchQ").val("");
                 return false;
             }
+
             if (!hQty) {
                 if (sq) {
                     $(".hQty").val("sq");
@@ -253,6 +257,7 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
                     dashboardFactory.clickHistory(s);
 //                    $scope.held = hQty;
                 } else {
+
                     if (!hQty.match(numExp)) {
                         $(".qtyE").text("Please fill in a number.");
                         return false;
@@ -263,11 +268,17 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
             }
 
             else {
-                $(".symE").text("");
-                $(".qtyE").text("");
-                $state.go("dashboard.data", {s: s, q: hQty});
-                dashboardFactory.clickHistory(s);
-                $scope.held = hQty;
+                console.log(hQty % 1);
+                if (hQty % 1 !== 0) {
+                    $(".qtyE").text("Please fill in a whole number.");
+                    return false;
+                } else {
+                    $(".symE").text("");
+                    $(".qtyE").text("");
+                    $state.go("dashboard.data", {s: s, q: hQty});
+                    dashboardFactory.clickHistory(s);
+                    $scope.held = hQty;
+                }
             }
         };
         $scope.showing = function () {
@@ -367,55 +378,51 @@ dashboardCtrl.controller("stockdataCtrl", ["$scope", "$rootScope", "$http", "$st
                 var sL = $(".dataContainer").position().left + 10;
                 $(".takePosition").css("left", tW - tP - 7 + "px");
                 $(".score").css("left", tW - sW - 7 - sL + "px");
-//                $rootScope.$on('$stateChangeSuccess',
-//                        function (event, toState, toParams, fromState, fromParams) {
-//                            $scope.gotPosition = false;
-//                        });
-                $rootScope.$watch("stockData", function (oldValue, newValue) {
-//                    if (oldValue !== undefined) {
-                    $rootScope.stockLast = $rootScope.stockData.Last;
-                    $rootScope.moData = {last: $rootScope.stockData.Last, tgtPrc: $rootScope.stockData.TgtPrc};
-                    if ($rootScope.userPositions.positions.length > 0) {
-                        var a = 0;
-                        angular.forEach($rootScope.userPositions.positions, function (o) {
-                            if (o.stock == $rootScope.stockData.Symbol) {
-                                $scope.gotPosition = true;
-                                a = 1;
-                                var n = o.position[0].name;
-                                angular.forEach($scope.stockData.Options, function (sd) {
-                                    if (sd.Name == n) {
-                                        $rootScope.stData = $rootScope.stockData;
-                                        $rootScope.position = sd;
-                                        $rootScope.LossPercentage = sd.LossPercentage;
-                                        var date = new Date();
-                                        var day = date.getDate();        // yields day
-                                        var month = date.getMonth();    // yields month
-                                        var year = date.getFullYear();  // yields year
-                                        var hour = date.getHours();     // yields hours 
-                                        var minute = date.getMinutes(); // yields minutes
-                                        var second = date.getSeconds();
-                                        var time = day + 1 + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
-                                       
-                                        dashboardFactory.getStockHistory("QQQ", time, n).then(function (d) {
-                                            $rootScope.historyData = d;
 
+                $rootScope.$watch("stockData", function (oldValue, newValue) {
+                    if (oldValue !== undefined) {
+                        $rootScope.stockLast = $rootScope.stockData.Last;
+                        $rootScope.moData = {last: $rootScope.stockData.Last, tgtPrc: $rootScope.stockData.TgtPrc};
+                        if ($rootScope.userPositions.positions.length > 0) {
+                            var a = 0;
+                            angular.forEach($rootScope.userPositions.positions, function (o) {
+                                if (o.stock == $rootScope.stockData.Symbol) {
+                                    $scope.gotPosition = true;
+                                    a = 1;
+                                    var n = o.position[0].name;
+                                    angular.forEach($scope.stockData.Options, function (sd) {
+                                        if (sd.Name == n) {
+                                            $rootScope.stData = $rootScope.stockData;
+                                            $rootScope.position = sd;
+                                            $rootScope.LossPercentage = sd.LossPercentage;
+                                            var date = new Date();
+                                            var day = date.getDate();        // yields day
+                                            var month = date.getMonth();    // yields month
+                                            var year = date.getFullYear();  // yields year
+                                            var hour = date.getHours();     // yields hours 
+                                            var minute = date.getMinutes(); // yields minutes
+                                            var second = date.getSeconds();
+                                            var time = day + 1 + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
+
+                                            dashboardFactory.getStockHistory("QQQ", time, n).then(function (d) {
+                                                $rootScope.historyData = d;
 //                                                $rootScope.position = $scope.stockData.Options[0];
-                                        });
-                                    }
-                                });
+                                            });
+                                        }
+                                    });
 //                                    break;
-                            }
-                            else {
+                                }
+                                else {
 ////                                    if ($scope.gotPosition == undefined) {
 ////                                        $scope.gotPosition = false;
 ////                                    }
 //                                        $scope.gotPosition = false;
-                                $rootScope.position = $scope.stockData.Options[0];
-                                $rootScope.LossPercentage = $rootScope.position.LossPercentage;
-                            }
-                        });
-                    } else {
-                        $rootScope.position = $scope.stockData.Options[0];
+                                    $rootScope.position = $scope.stockData.Options[0];
+                                    $rootScope.LossPercentage = $rootScope.position.LossPercentage;
+                                }
+                            });
+                        } else {
+                            $rootScope.position = $scope.stockData.Options[0];
 //                            if ($rootScope.position == undefined) {
 //                                $rootScope.$watch("stockData", function (oldValue) {
 //                                    if (oldValue !== undefined) {
@@ -423,8 +430,8 @@ dashboardCtrl.controller("stockdataCtrl", ["$scope", "$rootScope", "$http", "$st
 //                                    }
 //                                });
 //                            }
+                        }
                     }
-//                    }
                 });
             });
         }, 600);

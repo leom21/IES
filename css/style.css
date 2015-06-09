@@ -45,6 +45,7 @@ h2 {
 h3 {
   padding: 0;
   margin: 0;
+  margin-left: 2px;
   font-size: 1.75em;
   line-height: 1.25em;
   font-family: "Muli";
@@ -362,7 +363,7 @@ body {
   font-family: Bitter;
   font-weight: bold;
   font-size: 22px;
-  margin-left: -15px;
+  margin-left: -11px;
 }
 .dashBoardMenu ul li {
   display: inline-block;
@@ -757,18 +758,15 @@ body {
 }
 .graph {
   width: 99.3%;
-  background: #fff;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -o-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border: 1px solid #e0e0e0;
+  /*background:#fff;*/
+  /*.border-radius(5px);*/
+  border-top: 1px solid #e0e0e0;
+  padding-top: 10px;
   padding-bottom: 15px;
 }
 .graph .stockD {
   width: 48% !important;
-  margin: 10px 0px 10px 10px;
+  margin: 10px 0px 10px 3px;
   cursor: default !important;
   float: left;
 }
@@ -780,18 +778,18 @@ body {
   cursor: default;
 }
 .graph .stockD tr:nth-child(3) {
-  background: #94A59F !important;
+  background: #aecbc1 !important;
   font-weight: bold;
 }
 .graph .stockD .title {
-  background: #94A59F !important;
+  background: #aecbc1 !important;
   font-weight: bold;
 }
 .graph .stockD .title td {
   font-size: 12px !important;
 }
 .graph .stockD .title:hover {
-  background: #94A59F !important;
+  /*background:#94A59F !important;*/
 }
 .graph .stockD .title td:first-of-type {
   border-top-left-radius: 5px;
@@ -800,7 +798,7 @@ body {
   clear: both;
   float: left;
   width: 48% !important;
-  margin: 10px 10px 0px 10px;
+  margin: 10px 10px 0px 3px;
   cursor: default !important;
 }
 .graph .stockR:nth-child(even) {
@@ -1004,7 +1002,7 @@ body {
         }*/
 }
 #bellR2 .lineChart {
-  margin-left: -5% !important;
+  margin-left: -3.2% !important;
   width: 102%;
 }
 #bellR2 .lineChart .nv-series-0 {
@@ -1146,7 +1144,7 @@ body {
 .stockTableContainer {
   /*overflow-y: auto;*/
   clear: both;
-  margin-left: 12px;
+  margin-left: 6px;
   height: 125px;
 }
 .stockTableContainer::-webkit-scrollbar {
@@ -1499,13 +1497,9 @@ body {
   cursor: pointer;
 }
 .stocksArea .container {
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -o-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border: 1px solid #ddd;
-  background: #fff;
+  /*.border-radius(5px);*/
+  /*border:1px solid #ddd;*/
+  /*background:#fff;*/
   width: 100%;
   padding: 10px;
 }
@@ -1519,6 +1513,7 @@ body {
 .stocksArea .container li {
   width: 12.7%;
   margin-right: 25px;
+  text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
   display: inline-block;
 }
 .stocksArea .container li .label {

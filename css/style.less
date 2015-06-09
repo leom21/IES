@@ -42,6 +42,7 @@ h2{
 h3{
     padding:0;
     margin:0;
+    margin-left:2px;
     font-size:1.75em;
     line-height: 1.25em;
     font-family:"Muli";
@@ -331,7 +332,7 @@ body{
             font-family:Bitter;
             font-weight: bold;
             font-size:22px;
-            margin-left:-15px;
+            margin-left:-11px;
         }
         li{
             display:inline-block;
@@ -668,13 +669,14 @@ body{
 //Stock view
 .graph{
     width:99.3%;
-    background:#fff;
-    .border-radius(5px);
-    border:1px solid @lightBorder;
+    /*background:#fff;*/
+    /*.border-radius(5px);*/
+    border-top:1px solid @lightBorder;
+    padding-top:10px;
     padding-bottom:15px;
     .stockD{
         width:48% !important;
-        margin:10px 0px 10px 10px;
+        margin:10px 0px 10px 3px;
         cursor: default !important;
         float:left;
         &:nth-child(even){
@@ -685,17 +687,17 @@ body{
             cursor:default;
         }
         tr:nth-child(3){
-            background:#94A59F !important;
+            background:rgb(174, 203, 193) !important;
             font-weight:bold;
         }
         .title{
-            background:#94A59F !important;
+            background:rgb(174, 203, 193) !important;
             font-weight: bold;
             td{
                 font-size:12px !important;
             }
             &:hover{
-                background:#94A59F !important;
+                /*background:#94A59F !important;*/
             }
             td:first-of-type{
                 border-top-left-radius:5px;
@@ -707,7 +709,7 @@ body{
         clear:both;
         float:left;
         width:48% !important;
-        margin:10px 10px 0px 10px;
+        margin:10px 10px 0px 3px;
         cursor: default !important;
         &:nth-child(even){
             background:darken(#fff, 1%);
@@ -883,7 +885,7 @@ body{
     padding-left:2px;
     /*margin-top:30px;*/
     .lineChart{
-        margin-left: -5% !important;
+        margin-left: -3.2% !important;
         width:102%;
         .nv-series-0{
             /*stroke: url(#historicalB) !important;*/
@@ -1018,7 +1020,7 @@ body{
 .stockTableContainer{
     /*overflow-y: auto;*/
     clear:both;
-    margin-left: 12px;
+    margin-left: 6px;
     height:125px;
     &::-webkit-scrollbar { width: 3px; height: 2px;}
     &::-webkit-scrollbar-button {  background-color: rgba(0,0,0,0.3); display:none;}
@@ -1326,9 +1328,9 @@ body{
         cursor: pointer;
     }
     .container{
-        .border-radius(5px);
-        border:1px solid #ddd;
-        background:#fff;
+        /*.border-radius(5px);*/
+        /*border:1px solid #ddd;*/
+        /*background:#fff;*/
         width:100%;
         padding:10px;
         .stock{
@@ -1341,6 +1343,7 @@ body{
         li{
             width:12.7%;
             margin-right:25px;
+            text-shadow:1px 1px 1px rgba(230,230,230,0.8);
             .label{
                 color:#aaa;
                 font-size:12px;
