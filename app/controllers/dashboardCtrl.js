@@ -151,10 +151,26 @@ dashboardCtrl.controller("watchlistCtrl", ["$scope", "$rootScope", "$http", "das
         });
     }]);
 
-dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$state", "$timeout", "dashboardFactory", function ($scope, $rootScope, $http, $state, $timeout, dashboardFactory) {
+dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$state", "$timeout", "dashboardFactory", "toolTip", function ($scope, $rootScope, $http, $state, $timeout, dashboardFactory, toolTip) {
         $scope.logout = function () {
             dashboardFactory.logout();
         };
+
+        $scope.toolTip = function (type, e) {
+            var x = e.pageX;
+            var y = e.pageY;
+            var content = toolTip.showContent(type);
+            $(".toolTip").text(content);
+            var w = $(".toolTip").width();
+            var h = $(".toolTip").height();
+            $(".toolTip").css({"left": x + "px", "top": y + "px", "opacity": "1", "margin-left":-w/2 - 5 + "px", "margin-top":-h*2 - 5 + "px"});
+        };
+
+        $scope.toolTipOut = function () {
+            $(".toolTip").text("").css({"opacity": 0});
+
+        }
+
         $scope.closeMe = false;
         $scope.focus = false;
         $scope.clickPos = function (e) {

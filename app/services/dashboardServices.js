@@ -4,6 +4,9 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
 //    localStorage.removeItem("tracker");
 //    localStorage.removeItem("userDefs");
 //    localStorage.removeItem("searchHistory");
+
+        $rootScope.toolTipOn = true; //Activate or de-activate tooltips
+
         if (sessionStorage.logged == undefined) {
             dashboardFactory.logout();
         }
@@ -13,9 +16,7 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                     $(".uberContainer").css("top", h * 0.3 + "px");
                     $(".footer").css("top", h - 18 + "px");
                 });
-
         $rootScope.idleTime = 0;
-
 
         $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
@@ -467,6 +468,24 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                             return def.resolve("OK");
                         });
                 return def.promise;
+            }
+        };
+    }]);
+
+dashboardServices.factory("toolTip", ["$rootScope", function ($rootScope) {
+        return{
+            showContent: function (type) {
+                /* At the top of the file you can see the  $rootScope.toolTipOn var.
+                 * Use it to enable\disable tooltips.
+                 */
+                var content = {
+                    marketCap: "This is a content string",
+                    originalScore: "This is yet another content string."
+                }
+
+                if ($rootScope.toolTipOn == true) {
+                    return content[type];
+                }
             }
         };
     }]);

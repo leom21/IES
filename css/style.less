@@ -224,6 +224,42 @@ body{
     }
 }
 
+.toolTip{
+    .box-shadow(1px, 1px, 1px, rgba(0,0,0,0.1));
+    position:absolute;
+    padding:5px;
+    .border-radius(5px);
+    border:1px solid #ddd;
+    background:#fff;
+    color:#656565;
+    z-index:1;
+    margin-top:-20px;  
+    max-width:250px;
+    box-sizing: content-box;
+    &:after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -8px;
+        width: 0; height: 0;
+        border-top: 8px solid #fff;
+        border-right: 8px solid transparent;
+        border-left: 8px solid transparent;
+    }
+    &:before {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -9px;
+        width: 0; height: 0;
+        border-top: 9px solid #DDDDDD;
+        border-right: 9px solid transparent;
+        border-left: 9px solid transparent;
+    }
+}
+
 //Query page
 .queryPage{
     /*margin-top:105px;*/
