@@ -4,7 +4,9 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
 //    localStorage.removeItem("tracker");
 //    localStorage.removeItem("userDefs");
 //    localStorage.removeItem("searchHistory");
-
+        if (sessionStorage.logged == undefined) {
+            dashboardFactory.logout();
+        }
         $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
                     var h = $(document).height();
@@ -31,6 +33,7 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                                 }
                                 if ($rootScope.idleTime > 20) {
                                     if ($state.current.name !== "/") {
+                                        alert("It seems that you were inactive for the past 30 minutes or more.\n For security reasons, please login again.")
                                         dashboardFactory.logout();
                                     }
                                 } else {
@@ -78,6 +81,8 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 var data = {username: username, password: password};
                 $http.post("app/php/dashboardApi.php", {act: "userLogin", data: data})
                         .success(function (d) {
+                            sessionStorage.logged = "userLogged";
+
                             if (d == "NO_USER") {
                                 $("#warning").text("Sorry, there is no such user.");
                                 $(".usr").val("");
@@ -126,6 +131,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 localStorage.removeItem("watchlist");
                 localStorage.removeItem("optionsWatch");
                 localStorage.removeItem("cH");
+                localStorage.removeItem("tracker");
 
                 delete $rootScope.ls;
 //                delete $rootScope.username;
@@ -222,12 +228,12 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: s})
                         .success(function (IESdata) {
                             if (IESdata["d"].length > 0) {
-                                $rootScope.$on('$stateChangeStart',
-                                        function (event, toState, toParams, fromState, fromParams) {
-                                            if (toState.url.split("/")[1] == "stock") {
-                                                _this.insertSearch(os);
-                                            }
-                                        });
+//                                $rootScope.$on('$stateChangeStart',
+//                                        function (event, toState, toParams, fromState, fromParams) {
+//                                            if (toState.url.split("/")[1] == "stock") {
+                                _this.insertSearch(os);
+//                                            }
+//                                        });
                             }
                             $rootScope.IESdata = IESdata["d"];
                             $(".loadingView").delay(400).fadeOut(150);
@@ -262,7 +268,13 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             },
             insertSearch: function (s) {
                 if (s) {
+                    console.log(typeof s);
+                    if (typeof s !== "object") {
+                        s = [s];
+                    }
+
                     s = s[0].toUpperCase();
+
                     function send(id, sh) {
                         var data = {id: id, q: sh};
                         $http.post("app/php/dashboardApi.php", {act: "newHistory", data: data})
@@ -277,18 +289,18 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                         });
                                         $rootScope.searchHistory = hArr;
                                         localStorage.setItem("searchHistory", d);
-//                                        $rootScope.sH = d;
+                                        $rootScope.sH = d;
                                     }
                                 });
                     }
-
+                    console.log($rootScope.sH);
                     if ($rootScope.sH == null || $rootScope.sH == "null") {
                         var sh = s;
                         send($rootScope.userId, sh);
                     } else {
                         var sHa = $rootScope.sH.split(",");
                         if (sHa.indexOf(s) == -1) {
-                            if (sHa.length == 5) {
+                            if (sHa.length == 5 || sHa.length > 4) {
                                 sHa.splice(4, 1);
                                 sHa.unshift(s);
                                 sHa = sHa.toString();
@@ -298,6 +310,15 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                 var sh = $rootScope.sH;
                                 send($rootScope.userId, sh);
                             }
+                        } else {
+//                            if (sHa.length === 5) {
+                            var inx = sHa.indexOf(s);
+                            console.log(inx);
+                            var item = sHa.splice(inx, 1);
+                            sHa.unshift(s);
+                            sHa = sHa.toString();
+                            send($rootScope.userId, sHa);
+//                            }
                         }
                     }
                 }

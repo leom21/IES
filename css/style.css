@@ -708,14 +708,14 @@ body {
   padding: 10px 0px;
 }
 .dataContainer tr:nth-child(even) {
-  background: #fff;
+  /*background:#fff;*/
 }
 .dataContainer tr td {
   padding: 5px;
   font-size: 14px !important;
 }
 .dataContainer tr:hover {
-  background: #dfe4e2;
+  /*background:lighten(@blue, 27%);*/
 }
 .dataContainer .stockList {
   font-weight: bolder;

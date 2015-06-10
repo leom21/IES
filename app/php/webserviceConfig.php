@@ -1,5 +1,4 @@
 <?php
-
 ini_set('display_errors', 1);
 
 $uri = explode(".", ltrim($_SERVER["HTTP_HOST"], "/"));

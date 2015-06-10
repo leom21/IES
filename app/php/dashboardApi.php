@@ -13,7 +13,6 @@ foreach ($json->data as $dKey => $dValue) {
 @$act = $json->act;
 
 class dashboardApi {
-
     public function getAction($act, $data) {
         if (!empty($data)) {
             $this->$act($data);

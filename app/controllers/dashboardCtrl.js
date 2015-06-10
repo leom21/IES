@@ -161,9 +161,9 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
             var c = e.target.className;
             if (c !== "showHistoryList") {
                 $scope.closeMe = true;
-//                console.log($scope.closeMe);
             }
         };
+
         $scope.stocks = [];
         $scope.showList = function (e) {
             if (e.keyCode !== 13) {
@@ -199,18 +199,18 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
         }
 
         $scope.clickedStock = function (s) {
-//            $(".srcQ").val(s);
             $scope.searchQ = s;
             var el = document.querySelector(".hQty");
             el.focus();
             el.value = 100;
         };
+
         $scope.searchStockForm = function (s) {
             $state.go("dashboard.index");
             if (s == null) {
                 var s = $(".searchQ").val();
             }
-            
+
             searchEffect("show");
             dashboardFactory.searchStock(s).then(function (d) {
                 $timeout(function () {
@@ -225,6 +225,7 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
                 }, 500);
             });
         };
+
         $scope.seeStock = function (s) {
             $(".searchQ").val(s);
             searchEffect("show");
