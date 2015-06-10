@@ -945,7 +945,7 @@ body {
   margin-left: -53px;
   z-index: 0;
   width: 50%;
-  height: 500px;
+  /*height:500px;*/
   overflow: hidden;
 }
 #bell2 .nvd3 .nv-groups path.nv-line {
@@ -1038,7 +1038,7 @@ body {
   top: 90px;
   z-index: 0;
   width: 50%;
-  height: 500px;
+  /*height:500px;*/
   float: right;
   right: 3px;
   overflow: hidden;
@@ -1153,7 +1153,8 @@ body {
   width: 50%;
   float: right;
   text-align: center;
-  font-size: 24px;
+  font-size: 16px;
+  margin-top: 2px;
   font-weight: bold;
   padding-top: 0px;
 }
@@ -1389,7 +1390,7 @@ body {
   border-spacing: 0px;
   border-collapse: collapse;
   font-size: 14px;
-  margin-left: 10px;
+  margin-left: 5px;
   margin-top: 30px;
   margin-bottom: -30px;
 }
@@ -1551,17 +1552,20 @@ body {
 .stocksArea .container .stock {
   margin-bottom: 35px;
 }
-.stocksArea .container ul {
+.stocksArea .container table {
+  width: 100%;
+}
+.stocksArea .container tr {
   width: 100%;
   margin: 15px auto;
 }
-.stocksArea .container li {
-  width: 12.7%;
-  margin-right: 25px;
+.stocksArea .container td {
+  width: auto;
+  margin-right: 55px;
   text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
   display: inline-block;
 }
-.stocksArea .container li .label {
+.stocksArea .container td .label {
   color: #aaa;
   font-size: 12px;
 }

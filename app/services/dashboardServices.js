@@ -1,21 +1,19 @@
 var dashboardServices = angular.module("dashBoardServicesModule", []);
 
 dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$q", "$rootScope", function (dashboardFactory, $state, $stateParams, $http, $q, $rootScope) {
-//    localStorage.removeItem("tracker");
-//    localStorage.removeItem("userDefs");
-//    localStorage.removeItem("searchHistory");
-
         $rootScope.toolTipOn = true; //Activate or de-activate tooltips
 
-        if (sessionStorage.logged == undefined) {
+        if (sessionStorage.logged == undefined) { //Prevent user from entering a secured page directly.
             dashboardFactory.logout();
         }
+
         $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
                     var h = $(document).height();
                     $(".uberContainer").css("top", h * 0.3 + "px");
                     $(".footer").css("top", h - 18 + "px");
                 });
+
         $rootScope.idleTime = 0;
 
         $rootScope.$on('$stateChangeSuccess',
@@ -45,9 +43,10 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                     }
                     var s = toState.name.split(".");
                     if (s[0] === "dashboard") {
-                        if (!localStorage["userDefs"]) {
+                        if (!localStorage["userDefs"]) { //Varify that user was logged and data from DB was loaded to localStorage.
                             $state.go("/");
                         } else {
+                            //bind localStorage data to $rootScope object.
                             var ls = JSON.parse(localStorage["userDefs"]);
                             $rootScope.ls = ls;
                             $rootScope.username = ls.username;
@@ -96,9 +95,8 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                             else if (d == "BLOCKED") {
                                 $("#warning").text("You were blocked out of the system.");
                             } else {
-                                var getTime = {value: "value", timestamp: new Date().getTime()};
-                                localStorage.setItem("session", JSON.stringify(getTime));
 
+                                //Set user data when logs in.
                                 $("#warning").text("");
                                 localStorage.setItem("userDefs", JSON.stringify(d));
                                 localStorage.setItem("tracker", d.clickHistory);
@@ -135,19 +133,13 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 localStorage.removeItem("tracker");
 
                 delete $rootScope.ls;
-//                delete $rootScope.username;
-//                delete $rootScope.userId;
-//                delete $rootScope.userPositions;
-//                delete $rootScope.watchlist;
-//                delete $rootScope.sH;
-//                delete $rootScope.optionsWatch;
-//                delete $rootScope.clickHistory;
             },
             searchHistory: function (id) {
                 var def = $q.defer();
                 var data = {
                     id: id
                 };
+
                 $http.post("app/php/dashboardApi.php", {act: "getHistory", data: data})
                         .success(function (d) {
                             return def.resolve(d);
@@ -174,10 +166,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 s = s.toLowerCase();
                 if ($rootScope.ls.searchHistory !== null && $rootScope.ls.searchHistory !== "") {
                     var h = $rootScope.ls.searchHistory.toLowerCase();
-                }
-                if (s.length > 2) {
-//                this.insertSearch(s);
-//                this.clickHistory(s);
                 }
                 $.ajax({
                     type: 'GET',
@@ -229,12 +217,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: s})
                         .success(function (IESdata) {
                             if (IESdata["d"].length > 0) {
-//                                $rootScope.$on('$stateChangeStart',
-//                                        function (event, toState, toParams, fromState, fromParams) {
-//                                            if (toState.url.split("/")[1] == "stock") {
                                 _this.insertSearch(os);
-//                                            }
-//                                        });
                             }
                             $rootScope.IESdata = IESdata["d"];
                             $(".loadingView").delay(400).fadeOut(150);
@@ -269,7 +252,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             },
             insertSearch: function (s) {
                 if (s) {
-                    console.log(typeof s);
                     if (typeof s !== "object") {
                         s = [s];
                     }
@@ -294,7 +276,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                     }
                                 });
                     }
-                    console.log($rootScope.sH);
                     if ($rootScope.sH == null || $rootScope.sH == "null") {
                         var sh = s;
                         send($rootScope.userId, sh);
@@ -312,14 +293,11 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                 send($rootScope.userId, sh);
                             }
                         } else {
-//                            if (sHa.length === 5) {
                             var inx = sHa.indexOf(s);
-                            console.log(inx);
                             var item = sHa.splice(inx, 1);
                             sHa.unshift(s);
                             sHa = sHa.toString();
                             send($rootScope.userId, sHa);
-//                            }
                         }
                     }
                 }
@@ -397,16 +375,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                     id: id,
                     pos: uP
                 };
-//                if (uP.positions.length > 0) {
-//                    angular.forEach(uP.positions, function (p) {
-//                        if (d.stock == p.stock) {
-//                            p.position.push(d.position[0]);
-//                        }
-//                    });
-//                } else {
                 data.pos.positions.push(d);
-//                }
-
                 $http.post("app/php/dashboardApi.php", {act: "takePosition", data: data})
                         .success(function (d) {
                             localStorage.setItem("uP", JSON.stringify(d));
@@ -479,7 +448,7 @@ dashboardServices.factory("toolTip", ["$rootScope", function ($rootScope) {
                  * Use it to enable\disable tooltips.
                  */
                 var content = {
-                    marketCap: "This is a content string",
+                    marketCap: "This is a <b>content</b> string",
                     originalScore: "This is yet another content string."
                 }
 

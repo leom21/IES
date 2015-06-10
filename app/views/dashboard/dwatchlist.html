@@ -20,32 +20,35 @@
             <span ng-click="removeWL(stock.Symbol)" style="cursor:pointer;">
                 Remove
             </span>
-            <ul>
-                <li>
-                    <div class="label">
-                        Name
-                    </div>
-                    {{stock.CompanyName}}
-                </li>
-                <li>
-                    <div class="label">
-                        Industry
-                    </div>
-                    {{stock.Industry}}
-                </li>
-                <li>
-                    <div class="label">
-                        Last
-                    </div>
-                    {{stock.Last}}$
-                </li>
-                <li>
-                    <div class="label">
-                        Market cap
-                    </div>
-                    {{stock.MktCapB| number:0}}Bn
-                </li>
-            </ul>
+            <table>
+                <tr>
+                    <td>
+                        <div class="label">
+                            Name
+                        </div>
+                        {{stock.CompanyName}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            Industry
+                        </div>
+                        {{stock.Industry}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            Last
+                        </div>
+                        {{stock.Last}}$
+                    </td>
+                    <td>
+                        <div class="label">
+                            Market cap
+                        </div>
+                        {{stock.MktCapB| number:0}}Bn
+                    </td>
+                </ul>
+            </table>
+
         </div>
     </div>
 </div>

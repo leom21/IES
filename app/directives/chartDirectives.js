@@ -110,16 +110,16 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                             h = $(svgE).height();
                         });
 
-                        d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                        d3.select(element.find("svg")[0]).append("text")
                                 .attr("x", w / 2)
                                 .attr("y", h)
                                 .style("text-anchor", "middle")
                                 .text("Price");
-                        d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                        d3.select(element.find("svg")[0]).append("text")
                                 .style("text-anchor", "middle")
                                 .attr("transform", "translate(" + (w - 15) + ",150) rotate(90)")
                                 .text("Probability");
-                        d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                        d3.select(element.find("svg")[0]).append("text")
                                 .style("text-anchor", "middle")
                                 .attr("transform", "translate(20,150) rotate(-90)")
                                 .text("Profit");
@@ -228,7 +228,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 d3.selectAll(".yValue").remove();
                                 for (var i = 0; i < 5; i++) {
 
-                                    d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                                    d3.select(element.find("svg")[0]).append("text")
                                             .classed("yValue", true)
                                             .style("text-anchor", "middle")
                                             .style("font-size", "12px")
@@ -238,7 +238,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 }
 
                                 for (var i = 0; i < 6; i++) {
-                                    d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                                    d3.select(element.find("svg")[0]).append("text")
                                             .classed("yValue", true)
                                             .style("text-anchor", "middle")
                                             .style("font-size", "12px")
@@ -318,7 +318,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
 
                                 d3.selectAll(".xValue").remove();
                                 for (var i = 0; i < 5; i++) {
-                                    d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                                    d3.select(element.find("svg")[0]).append("text")
                                             .classed("xValue", true)
                                             .attr("x", 64 + (wStep * i))
                                             .attr("y", h - 27)
@@ -403,7 +403,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                             .duration(800)
                                             .attr("stroke-dasharray", "5,5");
 
-                                    d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                                    d3.select(element.find("svg")[0]).append("text")
                                             .classed("ep", true)
                                             .style("text-anchor", "start")
                                             .attr("transform", "translate(" + (currentx + 65) + "," + parseFloat(currenty + 36) + 100 + ") rotate(90)")
@@ -433,7 +433,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                             .attr("stop-color", function (d) {
                                                 return d.color;
                                             });
-                                    d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                                    d3.select(element.find("svg")[0]).append("text")
                                             .classed("lp", true)
                                             .attr("x", currentx + 85)
                                             .attr("y", (h / 4) * 3 + 30)
@@ -588,7 +588,7 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                             chart.y2Axis
                                     .tickFormat(d3.format(',.1%'));
 
-                            d3.select(element.find("svg")[0]).append("text")      // text label for the x axis
+                            d3.select(element.find("svg")[0]).append("text")
                                     .attr("x", w / 2)
                                     .attr("y", h - 10)
                                     .style("text-anchor", "middle")

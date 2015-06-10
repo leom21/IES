@@ -20,46 +20,48 @@
             <span ng-click="deletePosition(stock.position, stock.stock)" style="cursor:pointer;">
                 Remove
             </span>
+            
+            <table>
+                <tr ng-repeat="p in stock.position">
+                    <td>
+                        <div class="label">
+                            Entry date
+                        </div>
+                        {{p.date| date: "dd/MM/yy"}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            Expiry date
+                        </div>
+                        {{editDate(p.expiry) | date: "dd/MM/yy"}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            Entry Price
+                        </div>
+                        {{p.entryPrice| currency}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            Strike
+                        </div>
+                        {{p.strike}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            Current
+                        </div>
+                        {{currPrc[p.name].curr| currency}}
+                    </td>
+                    <td>
+                        <div class="label">
+                            P&L
+                        </div>
+                        {{pnl(currPrc[p.name].curr, p.entryPrice)}}
+                    </td>
 
-            <ul ng-repeat="p in stock.position">
-                <li>
-                    <div class="label">
-                        Entry date
-                    </div>
-                    {{p.date| date: "dd/MM/yy"}}
-                </li>
-                <li>
-                    <div class="label">
-                        Expiry date
-                    </div>
-                    {{editDate(p.expiry) | date: "dd/MM/yy"}}
-                </li>
-                <li>
-                    <div class="label">
-                        Entry Price
-                    </div>
-                    {{p.entryPrice| currency}}
-                </li>
-                <li>
-                    <div class="label">
-                        Strike
-                    </div>
-                    {{p.strike}}
-                </li>
-                <li>
-                    <div class="label">
-                        Current
-                    </div>
-                    {{currPrc[p.name].curr| currency}}
-                </li>
-                <li>
-                    <div class="label">
-                        P&L
-                    </div>
-                    {{pnl(currPrc[p.name].curr, p.entryPrice)}}
-                </li>
-
-            </ul>
+                </tr>
+            </table>
         </div>
     </div>
 </div>
