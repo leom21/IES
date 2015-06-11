@@ -498,8 +498,8 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
 
                             var pnl = ((((d.LastStockPrice - d.LastOptionPrice) + scope.opLast) / scope.osLast) - 1);
 
-                            data[0].values.push({x: n, y: pnl});
-//                                data[0].values.push({x: date, y: pnl});
+//                            data[0].values.push({x: n, y: pnl});
+                                data[0].values.push({x: date, y: pnl});
                         });
 
 //                        $timeout(function () {

@@ -400,8 +400,18 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                     }
                 });
                 $http.post("app/php/dashboardApi.php", {act: "takePosition", data: data})
-                        .success(function (d) {
-                            localStorage.setItem("uP", JSON.stringify(d));
+                        .success(function (dphp) {
+                            $http.post("../WebService/PortfolioWS.asmx/ClearIESPosition", {symbol: d})
+                                    .success(function (data) {
+                                        console.log(data);
+                                    })
+                                    .error(function (data, status, headers, config) {
+                                        $rootScope.IESdata = [];
+                                        $(".loadingView").delay(400).fadeOut(150);
+                                        $state.transitionTo("dashboard.noRes");
+                                        return def.resolve([]);
+                                    });
+                            localStorage.setItem("uP", JSON.stringify(dphp));
                             $rootScope.userPositions = JSON.parse(localStorage["uP"]);
                             return def.resolve("OK");
                         });

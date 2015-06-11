@@ -366,17 +366,18 @@ dashboardCtrl.controller("stockdataCtrl", ["$scope", "$rootScope", "$http", "$st
                                         if (sd.Name == n) {
                                             $rootScope.stData = $rootScope.stockData;
                                             $rootScope.position = sd;
+                                            console.log(o);
                                             $rootScope.LossPercentage = sd.LossPercentage;
-                                            var date = new Date();
+                                            var date = new Date(o.entry);
                                             var day = date.getDate();
                                             var month = date.getMonth();
                                             var year = date.getFullYear();
                                             var hour = date.getHours();
                                             var minute = date.getMinutes();
                                             var second = date.getSeconds();
-                                            var time = day + 1 + "/" + month + "/" + year + " " + hour + ':' + minute + ':' + second;
+                                            var time = month + 1 + "/" + day + "/" + year + " " + hour + ':' + minute + ':' + second;
 
-                                            dashboardFactory.getStockHistory("QQQ", time, n).then(function (d) {
+                                            dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
                                                 $rootScope.historyData = d;
                                             });
                                         }

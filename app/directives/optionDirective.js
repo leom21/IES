@@ -94,8 +94,8 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                             this.stockLast = $rootScope.stockLast;
                             this.break = ((position.Bid + position.Ask) / 2 + position.Strike).toFixed(2);
                             this.oScore = position.Score;
-//                            this.entry = new Date().getTime();
-                            this.entry = n; // For presentation only.
+                            this.entry = new Date().getTime();
+//                            this.entry = n; // For presentation only.
                             this.leg = position.Name;
                             this.optionName = position.Type + position.Strike;
 //                        this.optionPrice = parseFloat(takeP.refPrice.replace("$", "")).toFixed(2);
