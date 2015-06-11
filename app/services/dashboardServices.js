@@ -1,6 +1,6 @@
 var dashboardServices = angular.module("dashBoardServicesModule", []);
 
-dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$q", "$rootScope", function (dashboardFactory, $state, $stateParams, $http, $q, $rootScope) {
+dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$q", "$rootScope", "$timeout", function (dashboardFactory, $state, $stateParams, $http, $q, $rootScope, $timeout) {
         $rootScope.toolTipOn = true; //Activate or de-activate tooltips
 
         if (sessionStorage.logged == undefined) { //Prevent user from entering a secured page directly.
@@ -10,12 +10,20 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
         $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
                     var h = $(document).height();
-                    $(".uberContainer").css("top", h * 0.3 + "px");
-                    $(".footer").css("top", h - 18 + "px");
+                    var state = toState.name.split(".")[1];
+                    if (state == "data") {
+//                    $timeout(function () {
+                        var h = $(window).height();
+                        $(".footer").css("top", h + "px");
+                        console.log($(document).height() + ":" + $(".footer").css("top"))
+//                            console.log($("#wrapper").height());
+//                    }, 100);
+                    } else {
+//                        $(".footer").css("top", h + "px");
+                        $(".footer").css("top", "initial");
+                    }
                 });
-
         $rootScope.idleTime = 0;
-
         $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
                     if (toState.data.secured) {
@@ -74,7 +82,6 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                 }
         );
     }]);
-
 dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", "$rootScope", "$timeout", function ($log, $http, $q, $state, $rootScope, $timeout) {
         return{
             loginUser: function (username, password) {
@@ -82,7 +89,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 $http.post("app/php/dashboardApi.php", {act: "userLogin", data: data})
                         .success(function (d) {
                             sessionStorage.logged = "userLogged";
-
                             if (d == "NO_USER") {
                                 $("#warning").text("Sorry, there is no such user.");
                                 $(".usr").val("");
@@ -114,7 +120,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                 $rootScope.userPositions = JSON.parse(localStorage["uP"]);
                                 localStorage["optionsWatch"] = ls.optionsWatch;
                                 $rootScope.optionsWatch = JSON.parse(localStorage["optionsWatch"]);
-
                                 $timeout(function () {
                                     $state.go("dashboard");
                                 }, 300);
@@ -131,7 +136,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 localStorage.removeItem("optionsWatch");
                 localStorage.removeItem("cH");
                 localStorage.removeItem("tracker");
-
                 delete $rootScope.ls;
             },
             searchHistory: function (id) {
@@ -139,7 +143,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 var data = {
                     id: id
                 };
-
                 $http.post("app/php/dashboardApi.php", {act: "getHistory", data: data})
                         .success(function (d) {
                             return def.resolve(d);
@@ -257,7 +260,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                     }
 
                     s = s[0].toUpperCase();
-
                     function send(id, sh) {
                         var data = {id: id, q: sh};
                         $http.post("app/php/dashboardApi.php", {act: "newHistory", data: data})
@@ -343,7 +345,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                             oArray.push(p.name);
                         });
                     });
-
                     angular.forEach(oW.optionsWatch, function (o) {
                         if (o.stock == s.stock) {
                             angular.forEach(o.pos, function (p) {
@@ -398,7 +399,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                         data.pos = uP;
                     }
                 });
-
                 $http.post("app/php/dashboardApi.php", {act: "takePosition", data: data})
                         .success(function (d) {
                             localStorage.setItem("uP", JSON.stringify(d));
@@ -418,7 +418,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                     id: id,
                     wl: wl
                 };
-
                 $http.post("app/php/dashboardApi.php", {act: "addToWL", data: data})
                         .success(function (d) {
                             localStorage.setItem("watchlist", d);
@@ -440,7 +439,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             }
         };
     }]);
-
 dashboardServices.factory("toolTip", ["$rootScope", function ($rootScope) {
         return{
             showContent: function (type) {
@@ -450,8 +448,7 @@ dashboardServices.factory("toolTip", ["$rootScope", function ($rootScope) {
                 var content = {
                     marketCap: "This is a <b>content</b> string",
                     originalScore: "This is yet another content string."
-                }
-
+                };
                 if ($rootScope.toolTipOn == true) {
                     return content[type];
                 }

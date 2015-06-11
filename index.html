@@ -38,15 +38,15 @@ Element.prototype.getElementsByClassName = function(class_names) {
         <!--<link href="css/style.min.css" rel="stylesheet" type="text/css"/>-->
     </head>
     <body>
-        <div class="view" ui-view autoscroll="false">
-        </div>
-        <footer>
-            <div class="footer">
-                <a href="http://www.intel-agent.com" target="_blank" style="color:#000; text-decoration:none;">
-                    All rights reserved &copy 2015 - IntelAgent LTD.
-                </a>
+        <div id="wrapper">
+            <div class="view" ui-view autoscroll="false">
             </div>
-        </footer>
+        </div>
+        <div class="footer">
+            <a href="http://www.intel-agent.com" target="_blank" style="color:#000; text-decoration:none;">
+                All rights reserved &copy 2015 - IntelAgent LTD.
+            </a>
+        </div>
         <!--MIN-->
         <!--<script src="app/directives/chartDirectives.min.js" type="text/javascript"></script>-->
         <!--        <script src="app/controllers/landingCtrl.min.js" type="text/javascript"></script>

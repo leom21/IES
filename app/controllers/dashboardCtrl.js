@@ -161,16 +161,17 @@ dashboardCtrl.controller("dashboardCtrl", ["$scope", "$rootScope", "$http", "$st
 
         $scope.toolTip = function (type, e) {
             var x = e.pageX;
-            var y = e.pageY;
+            var y = $(e.target).offset().top;
             var content = toolTip.showContent(type);
             $(".toolTip").html(content);
             var w = $(".toolTip").width();
             var h = $(".toolTip").height();
-            $(".toolTip").css({"left": x + "px", "top": y + "px", "opacity": "1", "margin-left": -w / 2 - 5 + "px", "margin-top": -h * 2 - 5 + "px"});
+            $(".toolTip").css({"left": x + "px", "margin-left": (-w / 2) - 5 + "px", "top": y + "px", "margin-top": -h * 2 + 5 + "px"});
+            $(".toolTip").show();
         };
 
         $scope.toolTipOut = function () {
-            $(".toolTip").text("").css({"opacity": 0});
+            $(".toolTip").hide();
         };
 
         $scope.closeMe = false;

@@ -69,6 +69,14 @@ body {
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
+#wrapper {
+  min-height: 100%;
+  position: realtive;
+}
+.view {
+  padding-bottom: 100px;
+  min-height: 100%;
+}
 .innerWidth {
   width: 90%;
   margin: 0px auto;
@@ -225,6 +233,9 @@ body {
 .bottomBar ul li {
   display: inline-block;
 }
+.ttVis {
+  opacity: 1;
+}
 .toolTip {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
   -o-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
@@ -233,7 +244,7 @@ body {
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
   position: absolute;
   padding: 5px;
-  opacity: 0;
+  display: none;
   border-radius: 5px;
   -moz-border-radius: 5px;
   -o-border-radius: 5px;
@@ -1533,6 +1544,8 @@ body {
   color: #fff;
 }
 .stocksArea {
+  position: relative;
+  height: 100%;
   width: 740px;
   margin: 45px auto 0px auto;
 }
@@ -1548,6 +1561,7 @@ body {
   /*border:1px solid #ddd;*/
   /*background:#fff;*/
   width: 100%;
+  height: 100%;
   padding: 10px;
 }
 .stocksArea .container .stock {
@@ -1564,7 +1578,11 @@ body {
   width: auto;
   margin-right: 55px;
   text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
-  display: inline-block;
+  -o-text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
+  -ms-text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
+  -moz-text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
+  -webkit-text-shadow: 1px 1px 1px rgba(230, 230, 230, 0.8);
+  /*display:inline-block;*/
 }
 .stocksArea .container td .label {
   color: #aaa;
@@ -1577,6 +1595,10 @@ body {
   line-height: 1.5em;
   width: 500px;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  -o-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  -ms-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  -moz-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+  -webkit-text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 .dangerZone {
   position: absolute;

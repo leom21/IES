@@ -26,7 +26,6 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                     return Math.floor(scope.takeP.qty / 100);
                 };
 
-
                 scope.$watch("position", function (oldValue, newValue) {
                     if (oldValue !== undefined) {
                         if (scope.data == "" || scope.data == null) {
@@ -34,7 +33,6 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                         }
                         var legP = (scope.position.Ask + scope.position.Bid) / 2;
                         scope.takeP.refPrice = "$" + (Math.ceil(legP * 100) / 100).toFixed(2);
-
 
                         scope.premium = function () {
                             var ref = scope.takeP.refPrice.replace("$", "");

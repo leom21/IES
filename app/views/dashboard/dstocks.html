@@ -23,43 +23,42 @@
             
             <table>
                 <tr ng-repeat="p in stock.position">
-                    <td>
+                    <td style="width:9%">
                         <div class="label">
                             Entry date
                         </div>
                         {{p.date| date: "dd/MM/yy"}}
                     </td>
-                    <td>
+                    <td style="width:9%">
                         <div class="label">
                             Expiry date
                         </div>
                         {{editDate(p.expiry) | date: "dd/MM/yy"}}
                     </td>
-                    <td>
+                    <td style="width:9%">
                         <div class="label">
                             Entry Price
                         </div>
                         {{p.entryPrice| currency}}
                     </td>
-                    <td>
+                    <td style="width:9%">
                         <div class="label">
                             Strike
                         </div>
                         {{p.strike}}
                     </td>
-                    <td>
+                    <td style="width:9%">
                         <div class="label">
                             Current
                         </div>
                         {{currPrc[p.name].curr| currency}}
                     </td>
-                    <td>
+                    <td style="width:9%">
                         <div class="label">
                             P&L
                         </div>
                         {{pnl(currPrc[p.name].curr, p.entryPrice)}}
                     </td>
-
                 </tr>
             </table>
         </div>
