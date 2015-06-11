@@ -56,6 +56,12 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                 };
 
                 scope.isChanged = function (takeP) {
+                    if (takeP.qty == undefined) {
+                        scope.takeP.qty = 100;
+                    }
+                    else if (takeP.qty % 1 !== 0) {
+                        scope.takeP.qty = Math.floor(takeP.qty);
+                    }
                     if (takeP.optionName && takeP.optionPrice && takeP.qty && takeP.refPrice) {
 //                        $(".takePosition").text(" Add position ").css("padding", "5px 10px 5px 9px");
                         scope.validate = "OK";
@@ -125,8 +131,8 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                                 $rootScope.gotPosition = true;
 //                                $timeout(function () {
 //                                    $state.go($state.current, {}, {reload: true});
-                                    location.reload();
-                                    console.log("Position taken.");
+                                location.reload();
+                                console.log("Position taken.");
 //                                }, 1000);
                             }
                         });
