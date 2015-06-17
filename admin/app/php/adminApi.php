@@ -65,13 +65,15 @@ class adminApi {
         $password = $data["password"];
         $email = $data["email"];
         $positions = '{"positions":[]}';
+        $optionsWatch = '{"optionsWatch":[]}';
+        $watchlist = "";
 
         $key = "@00xLzE210";
 
         $encPWD = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $password, MCRYPT_MODE_CBC, md5(md5($key))));
 
-        $addUser = mysqli_query($iesConn, "INSERT INTO iesusers (name,username,password,email,admin,positions) " .
-                "VALUES('$name','$username','$encPWD','$email','$admin','$positions')");
+        $addUser = mysqli_query($iesConn, "INSERT INTO iesusers (name,username,password,email,admin,positions,optionsWatch,watchlist) " .
+                "VALUES('$name','$username','$encPWD','$email','$admin','$positions','$optionsWatch','$watchlist')");
 
         self::getAllUsers();
     }
@@ -147,7 +149,7 @@ class adminApi {
             echo "NO_USER";
         } else {
             while ($r = mysqli_fetch_assoc($checkUser)) {
-                if ($pwd == $r["password"]) {
+                if ($encPWD == $r["password"]) {
                     $userData["id"] = $r["id"];
                     $userData["username"] = $r["username"];
                     $userData["searchHistory"] = $r["searchHistory"];

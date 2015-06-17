@@ -9,14 +9,16 @@
     <h1>
         My watch list
     </h1>
-    <div class="msg" ng-if="wl !== true">
+    <div class="msg" ng-if="wl !== true" style="min-height:100%;">
         {{msg}}
     </div>
     <div class="container" ng-if="wl == true">
         <div class="stock" ng-repeat="stock in arr">
-            <h3 style="border-bottom:1px solid #ddd;" ng-click="moveToStock(stock.Symbol, 100)">
-                {{stock.Symbol}}
-            </h3>   
+            <a ui-sref="dashboard.data({s:stock.Symbol, q:100})">
+                <h3 style="border-bottom:1px solid #eee;">
+                    {{stock.Symbol}}
+                </h3>   
+            </a>  
             <span ng-click="removeWL(stock.Symbol)" style="cursor:pointer;">
                 Remove
             </span>

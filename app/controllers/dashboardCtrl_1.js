@@ -387,36 +387,9 @@ dashboardCtrl.controller("stockdataCtrl", ["$scope", "$rootScope", "$http", "$st
                             });
                             var found = $.inArray(n, legs);
                             if (found > -1) {
-                                dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
-                                    $scope.historyData = d;
-                                    $rootScope.HisLength = d.length;
 
-                                    if ($scope.historyData.length < 2) {
-                                        $(".noHismsg").show();
-                                    }
-//
-//                                    $rootScope.PositionPrices = {
-//                                        Ask: sd.Ask,
-//                                        Bid: sd.Bid,
-//                                        Last: sd.Last
-//                                    };
-                                });
-
-                                dashboardFactory.getPositionData([n]).then(function (d) {
-                                    $rootScope.PositionPrices = d[0];
-                                });
                             } else {
-                                dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
-                                    $scope.historyData = d;
-                                    $rootScope.HisLength = d.length;
 
-                                    if ($scope.historyData.length < 2) {
-                                        $(".noHismsg").show();
-                                    }
-                                });
-                                dashboardFactory.getPositionData([n]).then(function (d) {
-                                    $rootScope.PositionPrices = d[0];
-                                });
                             }
 
                             angular.forEach($scope.stockData.Options, function (sd) {
@@ -433,24 +406,24 @@ dashboardCtrl.controller("stockdataCtrl", ["$scope", "$rootScope", "$http", "$st
 //                                    var minute = date.getMinutes();
 //                                    var second = date.getSeconds();
 //                                    var time = month + 1 + "/" + day + "/" + year + " " + hour + ':' + minute + ':' + second;
-//                                    dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
-//                                        $scope.historyData = d;
-//                                        $rootScope.HisLength = d.length;
-//
-//                                        if ($scope.historyData.length < 2) {
-//                                            $(".noHismsg").show();
-//                                        }
-//
-//                                        $rootScope.PositionPrices = {
-//                                            Ask: sd.Ask,
-//                                            Bid: sd.Bid,
-//                                            Last: sd.Last
-//                                        };
-//                                    });
-//
-//                                    dashboardFactory.getPositionData([n]).then(function (d) {
-//                                        $rootScope.PositionPrices = d[0];
-//                                    });
+                                    dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
+                                        $scope.historyData = d;
+                                        $rootScope.HisLength = d.length;
+
+                                        if ($scope.historyData.length < 2) {
+                                            $(".noHismsg").show();
+                                        }
+
+                                        $rootScope.PositionPrices = {
+                                            Ask: sd.Ask,
+                                            Bid: sd.Bid,
+                                            Last: sd.Last
+                                        };
+                                    });
+
+                                    dashboardFactory.getPositionData([n]).then(function (d) {
+                                        $rootScope.PositionPrices = d[0];
+                                    });
                                 } else {
                                     console.log("!");
                                     $rootScope.stData = $rootScope.stockData;
@@ -462,17 +435,17 @@ dashboardCtrl.controller("stockdataCtrl", ["$scope", "$rootScope", "$http", "$st
                                     var minute = date.getMinutes();
                                     var second = date.getSeconds();
                                     var time = month + 1 + "/" + day + "/" + year + " " + hour + ':' + minute + ':' + second;
-//                                    dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
-//                                        $scope.historyData = d;
-//                                        $rootScope.HisLength = d.length;
-//
-//                                        if ($scope.historyData.length < 2) {
-//                                            $(".noHismsg").show();
-//                                        }
-//                                    });
-//                                    dashboardFactory.getPositionData([n]).then(function (d) {
+                                    dashboardFactory.getStockHistory($scope.symbol, time, n).then(function (d) {
+                                        $scope.historyData = d;
+                                        $rootScope.HisLength = d.length;
+
+                                        if ($scope.historyData.length < 2) {
+                                            $(".noHismsg").show();
+                                        }
+                                    });
+                                    dashboardFactory.getPositionData([n]).then(function (d) {
 //                                        $rootScope.PositionPrices = d[0];
-//                                    });
+                                    });
                                 }
                             });
                         }

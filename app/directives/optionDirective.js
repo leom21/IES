@@ -5,9 +5,13 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
             retrict: "E",
             replace: false,
             templateUrl: "app/views/dashboard/positionData.html",
-            scope: {data: '=data', stockData: '=stockData', symbol: '=symbol', position: '=position', index: '=index', stocksOpt: '=stocksOpt', heldQ: '=heldQ'},
+            scope: {data: '=data', hisData: '=hisData', stockData: '=stockData', symbol: '=symbol', position: '=position', index: '=index', stocksOpt: '=stocksOpt', heldQ: '=heldQ'},
             link: function (scope, element, attrs) {
-
+                $rootScope.$watch("HisLength", function (o) {
+                    if (o !== undefined) {
+                        scope.histLength = $rootScope.HisLength;
+                    }
+                });
                 $rootScope.$watch("held", function (o) {
                     if (o !== undefined) {
                         scope.heldQty = $rootScope.held;
@@ -31,7 +35,9 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                         if (scope.data == "" || scope.data == null) {
                             scope.gotPosition = false;
                         }
+//                        console.log(scope.position);
                         var legP = (scope.position.Ask + scope.position.Bid) / 2;
+//                        scope.breakPrice = scope.Break + (Math.ceil(legP * 100) / 100).toFixed(2);
                         scope.takeP.refPrice = "$" + (Math.ceil(legP * 100) / 100).toFixed(2);
 
                         scope.premium = function () {
@@ -54,12 +60,7 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                 };
 
                 scope.isChanged = function (takeP) {
-                    if (takeP.qty == undefined) {
-                        scope.takeP.qty = 100;
-                    }
-                    else if (takeP.qty % 1 !== 0) {
-                        scope.takeP.qty = Math.floor(takeP.qty);
-                    }
+
                     if (takeP.optionName && takeP.optionPrice && takeP.qty && takeP.refPrice) {
 //                        $(".takePosition").text(" Add position ").css("padding", "5px 10px 5px 9px");
                         scope.validate = "OK";
@@ -71,69 +72,78 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                 };
                 var c = 0;
                 scope.takePosition = function (index, validate, takeP, e) {
-                    c++;
-                    if (c == 1) {
-//                    if (validate == "OK") {
-                        function pos(symbol, position, index, takeP) {
-                            var tmp = ((position.Ask + position.Bid) / 2).toFixed(2);
-                            var optionPriceT = Math.floor(tmp * 100) / 100;
-
-                            //For presentation only
-                            var date = new Date();
-                            var day = date.getDate();        // yields day
-                            var month = date.getMonth();    // yields month
-                            var year = date.getFullYear();  // yields year
-                            var time = month + 1 + "/" + day + "/" + year;
-
-                            var d = new Date(time);
-                            var n = d.setDate(d.getDate() - 9);
-                            //End presentation
-
-                            this.stock = symbol;
-                            this.last = position.Last;
-                            this.stockLast = $rootScope.stockLast;
-                            this.break = ((position.Bid + position.Ask) / 2 + position.Strike).toFixed(2);
-                            this.oScore = position.Score;
-                            this.entry = new Date().getTime();
-//                            this.entry = n; // For presentation only.
-                            this.leg = position.Name;
-                            this.optionName = position.Type + position.Strike;
-//                        this.optionPrice = parseFloat(takeP.refPrice.replace("$", "")).toFixed(2);
-                            this.optionPrice = position.Last;
-                            this.qty = takeP.qty;
-                            this.optQty = scope.optQty;
-                            this.sQty = takeP.qty;
-                            this.refPrice = takeP.refPrice.replace("$", "");
-                            this.days = position.Days,
-                                    this.expiry = position.Expiry,
-                                    this.position =
-                                    [{
-                                            sQty: takeP.qty,
-                                            name: position.Name,
-                                            entryPrice: (position.Ask + position.Bid) / 2,
-                                            date: new Date().getTime(),
-                                            expiry: position.Expiry,
-                                            score: position.Score,
-                                            strike: position.Type + position.Strike
-                                        }]
-
+                    var optQty = $(".optQty").val();
+                    if (optQty < 100) {
+                        $(".PqtyE").text("The minimum quantity is 100.");
+                        return false;
+                    } else {
+                        if (optQty % 1 !== 0) {
+                            scope.takeP.qty = Math.floor(optQty);
                         }
+                        c++;
+                        if (c == 1) {
+//                    if (validate == "OK") {
+                            function pos(symbol, position, index, takeP) {
+                                var tmp = ((position.Ask + position.Bid) / 2).toFixed(2);
+                                var optionPriceT = Math.floor(tmp * 100) / 100;
+                                console.log(position.Ask);
 
-                        var y = new Date().getFullYear();
-                        var m = new Date().getMonth();
-                        var d = new Date().getDate();
+                                //For presentation only
+                                var date = new Date();
+                                var day = date.getDate();        // yields day
+                                var month = date.getMonth();    // yields month
+                                var year = date.getFullYear();  // yields year
+                                var time = month + 1 + "/" + day + "/" + year;
 
-                        var takePos = new pos(scope.symbol, scope.position, scope.index, scope.takeP);
-                        dashboardFactory.takePosition(takePos).then(function (d) {
-                            if (d == "OK") {
-                                $rootScope.gotPosition = true;
+                                var d = new Date(time);
+                                var n = d.setDate(d.getDate() - 9);
+                                //End presentation
+
+                                this.stock = symbol;
+                                this.last = position.Last;
+                                this.stockLast = $rootScope.stockLast;
+                                this.break = (parseFloat(position.Ask) + parseInt(position.Strike));
+                                this.oScore = position.Score;
+                                this.entry = new Date().getTime();
+//                            this.entry = n; // For presentation only.
+                                this.leg = position.Name;
+                                this.optionName = position.Type + position.Strike;
+//                        this.optionPrice = parseFloat(takeP.refPrice.replace("$", "")).toFixed(2);
+                                this.optionPrice = position.Last;
+                                this.qty = takeP.qty;
+                                this.optQty = scope.optQty;
+                                this.sQty = takeP.qty;
+                                this.refPrice = takeP.refPrice.replace("$", "");
+                                this.days = position.Days,
+                                        this.expiry = position.Expiry,
+                                        this.position =
+                                        [{
+                                                sQty: takeP.qty,
+                                                name: position.Name,
+                                                entryPrice: (position.Ask + position.Bid) / 2,
+                                                date: new Date().getTime(),
+                                                expiry: position.Expiry,
+                                                score: position.Score,
+                                                strike: position.Type + position.Strike
+                                            }]
+
+                            }
+
+                            var y = new Date().getFullYear();
+                            var m = new Date().getMonth();
+                            var d = new Date().getDate();
+
+                            var takePos = new pos(scope.symbol, scope.position, scope.index, scope.takeP);
+                            dashboardFactory.takePosition(takePos).then(function (d) {
+                                if (d == "OK") {
+                                    $rootScope.gotPosition = true;
 //                                $timeout(function () {
 //                                    $state.go($state.current, {}, {reload: true});
-                                location.reload();
-                                console.log("Position taken.");
+                                    location.reload();
 //                                }, 1000);
-                            }
-                        });
+                                }
+                            });
+                        }
                     }
                 };
 
@@ -160,19 +170,19 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                             scope.arr.push(s);
 //                            $rootScope.gotPosition = true;
                             scope.gotPositionD = true;
-                            $rootScope.$watch("stockData", function (oldValue) {
-                                if ($rootScope.stockData !== undefined) {
-                                    var d = $rootScope.stockData.Options;
-                                    angular.forEach(d, function (r) {
-                                        if (r.Name == s.position[0].name) {
-                                            var tmp = ((r.Ask + r.Bid) / 2).toFixed(2);
-                                            scope.currPrc = Math.floor(tmp * 100) / 100;
-                                        }
-                                    });
+                            $rootScope.$watch("PositionPrices", function (oldValue) {
+                                if ($rootScope.PositionPrices !== undefined) {
+//                                    var d = $rootScope.stockData.Options;
+//                                    angular.forEach(d, function (r) {
+//                                        if (r.Name == s.position[0].name) {
+                                    var tmp = (($rootScope.PositionPrices.Ask + $rootScope.PositionPrices.Bid) / 2).toFixed(2);
+                                    scope.currPrc = Math.floor(tmp * 100) / 100;
+//                                        }
+//                                    });
 
                                     scope.CstockLast = $rootScope.stockLast;
                                     scope.totalPnl = function (s, o) {
-                                        return parseFloat(s) + parseFloat(o) + "%";
+                                        return (parseFloat(s) + parseFloat(o)).toFixed(2) + "%";
                                     };
 
                                     scope.expiry = function (d) {
@@ -190,8 +200,42 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                                         return diffDays;
                                     };
 
+                                    scope.totPnl = function (sAvgPrice, oAvgPrice, sLast, oLast) {
+                                        var productPrice = sAvgPrice - oAvgPrice;
+                                        var currProductPrice = sLast - oLast;
+                                        return parseFloat(((currProductPrice / productPrice) - 1) * 100).toFixed(2) + "%";
+
+                                    };
+
+                                    scope.enhancedTotal = function (totPnl, stockChange) {
+                                        return (parseFloat(totPnl) - parseFloat(stockChange)).toFixed(2) + "%";
+                                    };
+
                                     scope.pnl = function (c, e) {
                                         return (((c - e) / e) * 100).toFixed(2) + "%";
+                                    };
+
+                                    scope.pnlOptionChange2 = function (c, e) {
+                                        if (e - c < 0) {
+                                            return ((Math.abs((c - e) / e) * 100)).toFixed(2) + "%";
+                                        } else {
+                                            if (((Math.abs((c - e) / e) * 100)).toFixed(2) == 0.00) {
+                                                return "0.00%";
+                                            } else {
+                                                return "-" + ((Math.abs((c - e) / e) * 100)).toFixed(2) + "%";
+                                            }
+                                        }
+                                    };
+                                    scope.pnlOptionChange = function (c, e) {
+                                        if (e - c > 0) {
+                                            return ((Math.abs((c - e) / e) * 100)).toFixed(2) + "%";
+                                        } else {
+                                            if (((Math.abs((c - e) / e) * 100)).toFixed(2) == 0.00) {
+                                                return "0.00%";
+                                            } else {
+                                                return "-" + ((Math.abs((c - e) / e) * 100)).toFixed(2) + "%";
+                                            }
+                                        }
                                     };
                                 }
                             });
@@ -231,14 +275,16 @@ optionDirective.directive("optionsSection", ["$timeout", "$rootScope", "$state",
                 });
 
                 scope.deletePosition = function (o, s) {
-                    var n = o[0].position[0].name;
+                    var n = o[0].leg;
+//                    console.log(o);
                     var c = confirm("You are about to remove the possition of " + n + ".");
                     if (c == true) {
                         dashboardFactory.deletePosition(s).then(function (d) {
                             if (d == "OK") {
                                 $rootScope.gotPosition = false;
-                                console.log($rootScope.userPositions);
-                                $state.go($state.current, {}, {reload: true});
+//                                console.log($rootScope.userPositions);
+//                                $state.go($state.current, {}, {reload: true});
+                                location.reload();
                             }
                         });
                     }

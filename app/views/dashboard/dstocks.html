@@ -1,7 +1,8 @@
-<div class="loadingView" ng-if="hasPosition == false">
+<div class="loadingView">
     Loading data, please wait.
     <br/>
 </div>
+
 <ng-include src="'app/views/dashboard/searchBar.html?i=1001'">
 </ng-include>
 
@@ -9,18 +10,21 @@
     <h1>
         My positions
     </h1>
-    <div class="msg" ng-if="hasPositions == false">
+    <div class="msg" ng-if="hasPositions == false" style="min-height:100%;">
         {{msg}}
     </div>
     <div class="container" ng-if="hasPositions == true"> 
         <div class="stock" ng-repeat="stock in pos">
-            <h3 style="border-bottom:1px solid #eee;" ng-click="moveToStock(stock.stock, stock.sQty)">
-                {{stock.stock}}
-            </h3>   
+            <!--<h3 style="border-bottom:1px solid #eee;" ng-click="moveToStock(stock.stock, stock.sQty)">-->
+            <a ui-sref="dashboard.data({s:stock.stock, q:100})">
+                <h3 style="border-bottom:1px solid #eee;">
+                    {{stock.stock}}
+                </h3>   
+            </a>
             <span ng-click="deletePosition(stock.position, stock.stock)" style="cursor:pointer;">
                 Remove
             </span>
-            
+
             <table>
                 <tr ng-repeat="p in stock.position">
                     <td style="width:9%">

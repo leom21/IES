@@ -27,7 +27,7 @@
                     </h3>
                 </td>
                 <td ng-if="!gotPosition" colspan="1">
-                    <h3 style="font-size:22px; text-align: right; margin-right:-2px; margin-top:6px;">
+                    <h3 style="font-size:22px; text-align: right; margin-top:6px;">
                         Best score: {{stockData.Options[0].Score}}
                     </h3>
                 </td>
@@ -50,7 +50,7 @@
                 <div ng-if="!gotPosition">
                     Price/Profit distribution 
                 </div>
-                <div ng-if="gotPosition == true">
+                <div ng-if="gotPosition == true && historyData.length > 1">
                     PnL 
                 </div>
             </div>
@@ -74,7 +74,8 @@
                     <td style="font-size:12px !important;">
                         Company
                     </td>
-                    <td style="font-size:12px !important;" ng-mousemove="toolTip('marketCap', $event)" ng-mouseleave="toolTipOut()">
+                    <!--<td style="font-size:12px !important;" ng-mousemove="toolTip('marketCap', $event)" ng-mouseleave="toolTipOut()">-->
+                    <td style="font-size:12px !important;">
                         Market Cap
                     </td>
                 </tr>
@@ -170,7 +171,7 @@
                         {{cut(position.Pot * 100)}}%   
                     </td>
                     <td>
-                        {{(position.Bid + position.Ask) / 2 + position.Strike | number:2}}   
+                        {{position.Bid + position.Strike | number:2}}   
                     </td>
                 </tr>
             </table>
@@ -203,18 +204,24 @@
                             <td>{{cut(data.Iv * 100)}}%</td>
                             <td>{{cut(data.Brk * 100)}}%</td>
                             <td>{{cut(data.AnnPot * 100)}}%</td>
-                            <td>{{(data.Bid + data.Ask)/2 | currency}}</td>
+                            <td>{{legPrice(data.Bid, data.Ask)}}</td>
                             <td style="color:#fff; background:rgb(174, 203, 193);">{{data.Score}}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <options-section data="userPositions" position="position" symbol="symbol" index="selectedRow" stocksOpt="optionsD" heldQ="held" stockData="stockData">
+            <options-section data="userPositions" hisData="historyData" position="position" symbol="symbol" index="selectedRow" stocksOpt="optionsD" heldQ="held" stockData="stockData">
             </options-section>
             <line-chart ng-if="!gotPosition" id="linear" data="position" optionS="optionS" type="'linear'" moData="moData"></line-chart>
             <line-chart ng-if="!gotPosition" id="bell" data="position" type="'bell'" kind="'reg'"></line-chart>
 
-            <historyd-chart ng-if="gotPosition == true" id="bellR2" data="historyData" position="userPositions"></historyd-chart>
+            <historyd-chart ng-if="gotPosition == true && historyData.length > 1" id="bellR2" data="historyData" position="userPositions"></historyd-chart>
+            <!--<div class="noHismsg" ng-if="gotPosition == true && historyData.length < 2">-->
+            <div class="noHismsg" style="display:none;">
+                Your position graph will become visible once<br/>
+                the position has at least 2 days data.<br/>
+                Thank you.
+            </div>
             <br/>
         </div>
 

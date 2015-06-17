@@ -128,8 +128,24 @@ class dashboardApi {
 
             function get_client_ip() {
                 $ipaddress = '';
-                if (getenv('HTTP_CLIENT_IP'))
-                    $ipaddress = getenv('HTTP_CLIENT_IP');
+                
+//                if (getenv('HTTP_CLIENT_IP'))
+//                    $ipaddress = getenv('HTTP_CLIENT_IP');
+//                else if (getenv('HTTP_X_FORWARDED_FOR'))
+//                    $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+//                else if (getenv('HTTP_X_FORWARDED'))
+//                    $ipaddress = getenv('HTTP_X_FORWARDED');
+//                else if (getenv('HTTP_FORWARDED_FOR'))
+//                    $ipaddress = getenv('HTTP_FORWARDED_FOR');
+//                else if (getenv('HTTP_FORWARDED'))
+//                    $ipaddress = getenv('HTTP_FORWARDED');
+//                else if (getenv('REMOTE_ADDR'))
+//                    $ipaddress = getenv('REMOTE_ADDR');
+//                else
+//                    $ipaddress = 'UNKNOWN';
+//                return $ipaddress;
+                if (getenv('REMOTE_ADDR'))
+                    $ipaddress = getenv('REMOTE_ADDR');
                 else if (getenv('HTTP_X_FORWARDED_FOR'))
                     $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
                 else if (getenv('HTTP_X_FORWARDED'))
@@ -138,8 +154,8 @@ class dashboardApi {
                     $ipaddress = getenv('HTTP_FORWARDED_FOR');
                 else if (getenv('HTTP_FORWARDED'))
                     $ipaddress = getenv('HTTP_FORWARDED');
-                else if (getenv('REMOTE_ADDR'))
-                    $ipaddress = getenv('REMOTE_ADDR');
+                else if (getenv('HTTP_CLIENT_IP'))
+                    $ipaddress = getenv('HTTP_CLIENT_IP');
                 else
                     $ipaddress = 'UNKNOWN';
                 return $ipaddress;
@@ -150,9 +166,11 @@ class dashboardApi {
             $ips = mysqli_query($iesConn, "SELECT ips FROM iesusers WHERE id='$id'");
 
             while ($r = mysqli_fetch_assoc($ips)) {
+                $ipsDb = $r["ips"];
+                $ipsToStr = (string)$ipsDb;
                 if (empty($r["ips"])) {
                     $history = mysqli_query($iesConn, "UPDATE iesusers SET ips='$ip' WHERE id='$id'");
-                } elseif (strripos($r["ips"], $ip) == false) {
+                } else if (strpos($ipsToStr, $ip) == false) {
                     $history = mysqli_query($iesConn, "UPDATE iesusers SET ips=CONCAT(ips,',$ip') WHERE id='$id'");
                 }
             }

@@ -23,12 +23,14 @@
                     </span>
                 </p>
                 <ul class="searchHistoryList" ng-hide="closeMe == true">
-                    <li ng-repeat="q in searchHistory track by $index| limitTo:5" ng-click="clickedStock(q.q)">
+                    <li ng-repeat="q in searchHistory track by $index| limitTo:5" ng-click="clickedStock(q.q);
+                            searchQ = q.q">
                         {{q.q}}
                     </li>
                 </ul>
                 <ul class="searchHistory" ng-if="focus == true">
-                    <li ng-repeat="q in universe| searchHistory:searchQ" ng-click="clickedStock(q.symbol)">
+                    <li ng-repeat="q in universe| searchHistory:searchQ" ng-click="clickedStock(q.symbol);
+                            searchQ = q.symbol">
                         {{q.symbol}}
                     </li>
                 </ul>
@@ -38,7 +40,7 @@
             <p>
                 Held quantity:<br/>
             </p>
-            <input type="number" value="" min="100" ng-model="hQty" class="hQty searchQ" ng-focus="closeMe = true; focus = false; (searchQ.length > 0)? hQty = 100 : ''">
+            <input ng-init="hQty = 100" type="number" value="" min="100" ng-model="hQty" class="hQty searchQ" ng-focus="closeMe = true; focus = false; (searchQ.length > 0)? hQty = 100 : 100">
             <p>
                 <span class="qtyE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
                 </span>

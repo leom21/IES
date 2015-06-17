@@ -70,7 +70,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                 } else {
                     nv.addGraph(function () {
                         var chart = nv.models.lineChart();
-                        chart.useInteractiveGuideline(true)
+                        chart.useInteractiveGuideline(false)
                                 .showYAxis(true)
                                 .showXAxis(true)
                                 .showLegend(true)
@@ -127,7 +127,8 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                         function draw(data) {
                             d3.select(element.find("svg")[0])
                                     .datum(data)
-                                    .transition().duration(1500).call(chart);
+                                    .call(chart);
+//                                    .transition().duration(1500).call(chart);
                             d3.select(".nv-legend")
                                     .attr("transform", "translate(" + (47) + ",0)");
 //                            nv.utils.windowResize(chart.update);
@@ -151,10 +152,58 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 var re = parseFloat(en) + parseFloat((en * 0.004));
                                 var mid = ((fS.Bid + fS.Ask) / 2);
                                 var brk = fS.Strike + mid;
-                                xs.push(Math.round(last * (1 - (2 * fS.PVol))),
-                                        fS.Strike,
-                                        fS.Strike + premium,
-                                        Math.round(last * (1 + (2 * fS.PVol))));
+
+//
+//                                var xL = [];
+//                                if (last > 120) {
+//                                    if (Math.floor((last * (1 + (fS.PVol))) / 10) * 10 < fS.Strike) {
+//                                        var postLast = (Math.floor((last * (1 + (fS.PVol))) / 10) * 10) + 10;
+//                                    } else {
+//                                        var postLast = Math.floor((last * (1 + (fS.PVol))) / 10) * 10;
+//                                    }
+
+
+//                                    xs.push(
+//                                            Math.floor((last * (1 - (2 * fS.PVol))) / 10) * 10,
+////                                            Math.floor((last * (1 - (fS.PVol))) / 10) * 10,
+//                                            last,
+//                                            postLast,
+//                                            Math.floor((last * (1 + (2 * fS.PVol))) / 10) * 10
+//                                            );
+//                                } else if (last < 120 || last > 50) {
+//                                    xs.push(
+//                                            Math.floor(last * (1 - (2 * fS.PVol))),
+////                                            Math.floor(last * (1 - (fS.PVol))),
+//                                            last,
+//                                            fS.Strike + premium,
+////                                            Math.floor(last * (1 + (fS.PVol))),
+//                                            Math.floor(last * (1 + (2 * fS.PVol)))
+//                                            );
+//                                } else if (last < 50) {
+//                                    xs.push(
+//                                            Math.floor(last * (1 - (2 * fS.PVol)) / 2),
+////                                            Math.floor(last * (1 - (fS.PVol)) / 2),
+//                                            last,
+//                                            fS.Strike + premium,
+////                                            Math.floor(last * (1 + (fS.PVol)) / 2),
+//                                            Math.floor(last * (1 + (2 * fS.PVol)) / 2)
+//                                            );
+//                                }
+//                               
+                                if (last > 50) {
+                                    xs.push(Math.round(last * (1 - (2 * fS.PVol))),
+                                            fS.Strike,
+                                            fS.Strike + premium,
+                                            Math.round(last * (1 + (2 * fS.PVol))));
+                                } else {
+                                    xs.push(
+                                            Math.floor(last * (1 - (2 * fS.PVol))),
+                                            fS.Strike,
+                                            fS.Strike + premium,
+                                            Math.floor(last * (1 + (2 * fS.PVol))));
+//                                    chart.forceX([Math.round(last * (1 - (2 * fS.PVol))), Math.round(last * (1 + (2 * fS.PVol)))]);
+                                }
+
                                 xs.sort(function (a, b) {
                                     if (a > b) {
                                         return 1;
@@ -220,9 +269,9 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 var step = Math.round(245 / 5);
                                 var hScale = {
                                     0: chartH - 44,
-                                    1: (chartH - 44) - 58,
+                                    1: (chartH - 44) - 65,
                                     2: (chartH - 44) - 130,
-                                    3: (chartH - 44) - 198,
+                                    3: (chartH - 44) - 195,
                                     4: (chartH - 44) - 261
                                 };
                                 d3.selectAll(".yValue").remove();
@@ -266,45 +315,23 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
 
 //Dynamic calculation.
 
-                                var xL = [];
-                                if (last > 120) {
-                                    if (Math.floor((last * (1 + (fS.PVol))) / 10) * 10 < fS.Strike) {
-                                        var postLast = (Math.floor((last * (1 + (fS.PVol))) / 10) * 10) + 10;
-                                    } else {
-                                        var postLast = Math.floor((last * (1 + (fS.PVol))) / 10) * 10;
-                                    }
-                                    xL.push(
-                                            Math.floor((last * (1 - (2 * fS.PVol))) / 10) * 10,
-                                            Math.floor((last * (1 - (fS.PVol))) / 10) * 10,
-                                            last,
-                                            postLast,
-                                            Math.floor((last * (1 + (2 * fS.PVol))) / 10) * 10
-                                            );
-                                } else if (last < 120 || last > 50) {
-                                    xL.push(
-                                            Math.floor(last * (1 - (2 * fS.PVol))),
-                                            Math.floor(last * (1 - (fS.PVol))),
-                                            last,
-                                            Math.floor(last * (1 + (fS.PVol))),
-                                            Math.floor(last * (1 + (2 * fS.PVol)))
-                                            );
-                                } else if (last < 50) {
-                                    xL.push(
-                                            Math.floor(last * (1 - (2 * fS.PVol)) / 2),
-                                            Math.floor(last * (1 - (fS.PVol)) / 2),
-                                            last,
-                                            Math.floor(last * (1 + (fS.PVol)) / 2),
-                                            Math.floor(last * (1 + (2 * fS.PVol)) / 2)
-                                            );
+                                if (last > 50) {
+                                    var tickMarks = [
+                                        (Math.floor(last * (1 - (2 * fS.PVol))) / 10) * 10,
+                                        Math.floor(last * (1 - (fS.PVol))),
+                                        last,
+                                        Math.floor(last * (1 + (fS.PVol))),
+                                        (Math.floor(last * (1 + (2 * fS.PVol))) / 10) * 10
+                                    ];
+                                } else {
+                                    var tickMarks = [
+                                        (Math.floor(last * (1 - (2 * fS.PVol)))),
+                                        Math.floor(last * (1 - (fS.PVol))),
+                                        last,
+                                        Math.ceil(last * (1 + (fS.PVol))),
+                                        (Math.ceil(last * (1 + (2 * fS.PVol))))
+                                    ];
                                 }
-
-                                var tickMarks = [
-                                    (Math.floor(last * (1 - (2 * fS.PVol))) / 10) * 10,
-                                    Math.floor(last * (1 - (fS.PVol))),
-                                    last,
-                                    Math.floor(last * (1 + (fS.PVol))),
-                                    Math.floor(last * (1 + (2 * fS.PVol)))
-                                ];
 
                                 chart.xAxis
                                         .tickValues(tickMarks)
@@ -443,15 +470,15 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                             .text(parseFloat(fS.LossPercentage * 100).toFixed(2) + "%");
                                     draw(linearData);
                                 }, 350);
-                                nv.utils.windowResize(function () {
-                                    chart.update();
-                                });
+//                                nv.utils.windowResize(function () {
+//                                    chart.update();
+//                                });
                             }
                         });
                     });
                 }
             }
-        }
+        };
     }]);
 
 chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", function ($rootScope, $timeout, $compile) {
@@ -499,10 +526,9 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                             var pnl = ((((d.LastStockPrice - d.LastOptionPrice) + scope.opLast) / scope.osLast) - 1);
 
 //                            data[0].values.push({x: n, y: pnl});
-                                data[0].values.push({x: date, y: pnl});
+                            data[0].values.push({x: date, y: pnl});
                         });
 
-//                        $timeout(function () {
                         nv.addGraph(function () {
                             var chart = nv.models.lineChart()
                                     .margin({left: 50, right: 35, bottom: 100})
@@ -538,45 +564,8 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                             var h = $(element.find("svg")[0]).height();
 
 //                                $(document).on("mousemove", element.find("svg")[0], function () {
-                            $(element.find("svg")[0]).on("mousemove", function () {
-                                d3.select(".yLine").remove();
-                                d3.select(".prc").remove();
+//                            $(element.find("svg")[0]).on("mousemove", function () {
 
-                                var lw = $(".nv-y2").offset().left;
-                                var bPos = $(element.find("svg")[0]).find(".hover");
-                                var leftOffset = $(bPos).offset().left;
-                                var getEq = $(bPos).attr("class");
-                                getEq = getEq.split("-")[3];
-                                getEq = getEq.split(" ")[0];
-
-                                var prc = ((data[0].values[getEq].y) * 100).toFixed(2);
-                                var date = new Date(data[0].values[getEq].x);
-
-                                var currentx = d3.transform(bPos.attr("transform")).translate[0];
-                                var currenty = d3.transform(bPos.attr("transform")).translate[1];
-
-                                if (lw == leftOffset || lw - leftOffset < 5) {
-                                    currentx = currentx - 65;
-                                }
-
-                                d3.select(element.find("svg")[0]).append("line")
-                                        .classed("yLine", true)
-                                        .style("stroke", "#ccc")
-                                        .attr("x1", "50")
-                                        .attr("y1", currenty + 30)
-                                        .attr("x2", "602")
-                                        .attr("y2", currenty + 30)
-                                        .transition()
-                                        .duration(800)
-                                        .attr("stroke-dasharray", "0,0");
-
-                                d3.select(element.find("svg")[0]).append("text")
-                                        .classed("prc", true)
-                                        .attr("x", currentx + 80)
-                                        .attr("y", currenty + 25)
-                                        .style("text-anchor", "middle")
-                                        .text(prc + "%");
-                            });
 
 //                                });
 
@@ -603,11 +592,64 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                                 return chart;
                             }
                             draw(data);
+
+                            element.on("mousemove", function () {
+                                d3.select(".yLine").remove();
+                                d3.select(".prc").remove();
+
+                                var ua = window.navigator.userAgent;
+                                var msie = ua.indexOf("MSIE ");
+
+                                if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+                                    var bPos = element.find("svg")[0].querySelector('.hover');
+                                    var currentx = d3.transform(bPos.getAttribute("transform")).translate[0];
+                                    var currenty = d3.transform(bPos.getAttribute("transform")).translate[1];
+                                } else {
+                                    var bPos = $(element.find("svg")[0]).find(".hover");
+                                    var currentx = d3.transform(bPos.attr("transform")).translate[0];
+                                    var currenty = d3.transform(bPos.attr("transform")).translate[1];
+                                    d3.select(element.find("svg")[0]).append("line")
+                                            .classed("yLine", true)
+                                            .style("stroke", "#ccc")
+                                            .attr("x1", "50")
+                                            .attr("y1", currenty + 30)
+                                            .attr("x2", "602")
+                                            .attr("y2", currenty + 30)
+                                            .transition()
+                                            .duration(800)
+                                            .attr("stroke-dasharray", "0,0");
+                                }
+
+                                var lw = $(".nv-y2").offset().left;
+                                var leftOffset = $(bPos).offset().left;
+                                var getEq = $(bPos).attr("class");
+                                getEq = getEq.split("-")[3];
+                                getEq = getEq.split(" ")[0];
+
+                                var prc = ((data[0].values[getEq].y) * 100).toFixed(2);
+                                var date = new Date(data[0].values[getEq].x);
+
+//                                var currentx = d3.transform(bPos.attr("transform")).translate[0];
+//                                var currenty = d3.transform(bPos.attr("transform")).translate[1];
+
+                                if (lw == leftOffset || lw - leftOffset < 5) {
+                                    currentx = currentx - 65;
+                                }
+
+                                d3.select(element.find("svg")[0]).append("text")
+                                        .classed("prc", true)
+                                        .attr("x", currentx + 80)
+                                        .attr("y", currenty + 25)
+                                        .style("text-anchor", "middle")
+                                        .text(prc + "%");
+                            });
                         });
-//                        }, 300);
+
+//                        $timeout(function () {
+//                            draw(data);
+//                        }, 400);
                     }
                 });
-                $compile(element.find("svg")[0])(scope);
             }
         };
     }]);

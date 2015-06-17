@@ -6,32 +6,23 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
         if (sessionStorage.logged == undefined) { //Prevent user from entering a secured page directly.
             dashboardFactory.logout();
         }
-                        var h = $(window).height();
-                        $("body").css("height",h - 50 + "px");
-//
-//        $rootScope.$on('$stateChangeSuccess',
-//                function (event, toState, toParams, fromState, fromParams) {
-////                    $timeout(function () {
-//                    var h = $(document).height();
-//                    var state = toState.name.split(".")[1];
-//                    if (state == "data") {
-////                    $timeout(function () {
-//                        var h = $(window).height();
-//                        $(".footer").css("top", h -3 + "px");
-////                            console.log($("#wrapper").height());
-////                    }, 100);
-//                    } else {
-//                        var fT = $(".footer").offset().top;
-////                            if (fT < h) {
-////                                $(".footer").css("top", h - 25 + "px");
-////                            } else {
-////                        $(".footer").css("top", h + "px");
-//                        $(".footer").css("top", "initial");
-////                            }
-//                    }
-////                    }, 300);
-//                });
 
+        $rootScope.$on('$stateChangeSuccess',
+                function (event, toState, toParams, fromState, fromParams) {
+                    var h = $(document).height();
+                    var state = toState.name.split(".")[1];
+                    if (state == "data") {
+//                    $timeout(function () {
+                        var h = $(window).height();
+                        $(".footer").css("top", h + "px");
+                        console.log($(document).height() + ":" + $(".footer").css("top"))
+//                            console.log($("#wrapper").height());
+//                    }, 100);
+                    } else {
+//                        $(".footer").css("top", h + "px");
+                        $(".footer").css("top", "initial");
+                    }
+                });
         $rootScope.idleTime = 0;
         $rootScope.$on('$stateChangeSuccess',
                 function (event, toState, toParams, fromState, fromParams) {
@@ -59,11 +50,6 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                         }
                     }
                     var s = toState.name.split(".");
-                    if (s[0] === "/") {
-                        $(".footer").hide();
-                    } else {
-                        $(".footer").show();
-                    }
                     if (s[0] === "dashboard") {
                         if (!localStorage["userDefs"]) { //Varify that user was logged and data from DB was loaded to localStorage.
                             $state.go("/");
@@ -224,18 +210,34 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 });
                 return def.promise;
             },
-            getStock: function (s, leg) {
+            getStock: function (data) {
                 var _this = this;
                 var def = $q.defer();
-                var os = s;
-                if (Array.isArray(s) == false) {
-                    s = [s];
-                }
+//                var os = s;
+//                if (Array.isArray(s) == false) {
+//                    s = [s];
+//                }
+                var stocks = [];
+                angular.forEach(data, function (d) {
+                    stocks.push(d);
+                    console.log(d);
+                });
+                console.log(data);
 
-                $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: s})
+//                var data = data;
+//                var data = [{Symbol: "IBM", TakenOptionSymbol: "IBM US 08/21/15 C180 US Equity"},
+//                    {Symbol: "ITG", TakenOptionSymbol: "ITG US 10/16/15 C35 US Equity"},
+//                    {Symbol: "QQQ", TakenOptionSymbol: "QQQ US 09/18/15 C114 US Equity"},
+//                    {Symbol: "XLF", TakenOptionSymbol: "XLF US 08/21/15 C26 US Equity"},
+//                    {Symbol: "AAPL", TakenOptionSymbol: "AAPL US 12/18/15 C155 US Equity"},
+//                    {Symbol: "GOOGL", TakenOptionSymbol: "GOOGL US 07/17/15 C590 US Equity"}
+//                ];
+//                $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: s, TakenOptionSymbol: leg})
+                console.log(data);
+                $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: data})
                         .success(function (IESdata) {
                             if (IESdata["d"].length > 0) {
-                                _this.insertSearch(os);
+//                                _this.insertSearch(os);
                             }
                             $rootScope.IESdata = IESdata["d"];
                             $(".loadingView").delay(400).fadeOut(150);
@@ -397,22 +399,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                             localStorage.setItem("uP", JSON.stringify(d));
                             $rootScope.userPositions = JSON.parse(localStorage["uP"]);
                             return def.resolve("OK");
-                        });
-                return def.promise;
-            },
-            getPositionData: function (symbols) {
-                var def = $q.defer();
-                $http.post("../WebService/PortfolioWS.asmx/GetIESPositionData", {optionSymbols: symbols})
-                        .success(function (data) {
-                            console.log(data);
-                            $(".loadingView").delay(400).fadeOut(150);
-                            return def.resolve(data["d"]);
-                        })
-                        .error(function (data, status, headers, config) {
-                            $rootScope.IESdata = [];
-                            $(".loadingView").delay(400).fadeOut(150);
-                            $state.transitionTo("dashboard.noRes");
-                            return def.resolve([]);
                         });
                 return def.promise;
             },

@@ -8,6 +8,7 @@ adminServices.factory("adminFactory", function ($rootScope, $http, $q, $state) {
 
             $http.post("app/php/adminApi.php", {act: "adminLogin", data: data})
                     .success(function (d) {
+                        console.log(d);
                         if (d == "NO_USER") {
                             $("#warning").text("Wrong username");
                         }
