@@ -1,6 +1,7 @@
-<div class="loadingView" ng-hide="wl == false">
+<div class="loadingView">
     Loading data, please wait.
-    <br/>
+    <br/><br/><br/><br/><br/>
+    <img src="gfx/loader.gif">
 </div>
 <ng-include src="'app/views/dashboard/searchBar.html?i=1001'">
 </ng-include>
@@ -19,18 +20,21 @@
                     {{stock.Symbol}}
                 </h3>   
             </a>  
-            <span ng-click="removeWL(stock.Symbol)" style="cursor:pointer;">
-                Remove
-            </span>
+            <div class="deletePositionPage deletePosition" ng-click="removeWL(stock, stock.Symbol)" style="right:0px; width: 150px;">
+                Remove from watch list
+            </div>
+            <!--<span ng-click="removeWL(stock.Symbol)" style="cursor:pointer;">-->
+                <!--Remove-->
+            <!--</span>-->
             <table>
                 <tr>
-                    <td style="width:25%">
+                    <td style="width:20%">
                         <div class="label">
                             Name
                         </div>
                         {{stock.CompanyName}}
                     </td>
-                    <td style="width:25%">
+                    <td style="width:20%">
                         <div class="label">
                             Industry
                         </div>
@@ -38,15 +42,21 @@
                     </td>
                     <td style="width:15%">
                         <div class="label">
-                            Last
+                            Stock Last
                         </div>
                         {{stock.Last}}$
                     </td>
-                    <td style="width:10%; margin-right:0px;">
+                    <td style="width:15%; margin-right:0px;">
                         <div class="label">
                             Market cap
                         </div>
                         {{stock.MktCapB| number:0}}Bn
+                    </td>
+                    <td style="width:10%; margin-right:0px;">
+                        <div class="label">
+                            Best score
+                        </div>
+                        {{stock.Options[0].Score}}
                     </td>
                 </tr>
             </table>

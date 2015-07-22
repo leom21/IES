@@ -65,15 +65,17 @@ class adminApi {
         $password = $data["password"];
         $email = $data["email"];
         $positions = '{"positions":[]}';
-        $optionsWatch = '{"optionsWatch":[]}';
+        $prevPositions = '{"prevPositions":[]}';
+        $prevWL = '{"prevWL":[]}';
+        $clickHistory = '{"clickHistory":[]}';
         $watchlist = "";
 
         $key = "@00xLzE210";
 
         $encPWD = base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, md5($key), $password, MCRYPT_MODE_CBC, md5(md5($key))));
 
-        $addUser = mysqli_query($iesConn, "INSERT INTO iesusers (name,username,password,email,admin,positions,optionsWatch,watchlist) " .
-                "VALUES('$name','$username','$encPWD','$email','$admin','$positions','$optionsWatch','$watchlist')");
+        $addUser = mysqli_query($iesConn, "INSERT INTO iesusers (name,username,password,email,admin,positions,watchlist,prevPositions,prevWL, clickHistory) " .
+                "VALUES('$name','$username','$encPWD','$email','$admin','$positions','$watchlist','$prevPositions','$prevWL', '$clickHistory')");
 
         self::getAllUsers();
     }
@@ -112,24 +114,17 @@ class adminApi {
         $usersArray = Array();
         $key = "@00xLzE210";
 
+        $getAllUsers = mysqli_query($iesConn, "SELECT * FROM iesusers") or die(mysqli_error($iesConn));
 
-        $getAllUsers = mysqli_query($iesConn, "SELECT * FROM iesusers");
         while ($r = mysqli_fetch_assoc($getAllUsers)) {
             $arr = array();
             $decPass = rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, md5($key), base64_decode($r["password"]), MCRYPT_MODE_CBC, md5(md5($key))), "\0");
-            $arr["id"] = $r["id"];
-            $arr["name"] = $r["name"];
-            $arr["username"] = $r["username"];
-            $arr["password"] = $decPass;
-            $arr["email"] = $r["email"];
-            $arr["blocked"] = $r["blocked"];
-            $arr["admin"] = $r["admin"];
-            $arr["ips"] = $r["ips"];
-            $arr["searchHistory"] = $r["searchHistory"];
-            $arr["clickHistory"] = $r["clickHistory"];
-            $usersArray[] = $arr;
+            $arr[] = $r;
+            $arr[0]["password"] = $decPass;
+            $usersArray[] = $arr[0];
         }
-        print json_encode($usersArray);
+
+        echo json_encode($usersArray);
     }
 
     private function adminLogin($data) {

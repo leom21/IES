@@ -1,6 +1,7 @@
 <div class="loadingView">
     Loading data, please wait.
-    <br/>
+    <br/><br/><br/><br/><br/>
+    <img src="gfx/loader.gif">
 </div>
 
 <ng-include src="'app/views/dashboard/searchBar.html?i=1001'">
@@ -14,57 +15,236 @@
         {{msg}}
     </div>
     <div class="container" ng-if="hasPositions == true"> 
-        <div class="stock" ng-repeat="stock in pos">
+        <div class="stock" ng-repeat="stock in userPositions.positions" ng-show="period(stock.entry) > 2 && expired[stock.stock] == false;">
+            <!--<h3 style="border-bottom:1px solid #eee;" ng-click="moveToStock(stock.stock, stock.sQty)">--> 
+            <a ui-sref="dashboard.data({s:stock.stock, q:100})">
+                <h3 style="border-bottom:1px solid #eee;">
+                    {{stock.stock}}
+                    <!--                    <span style="padding-right:5px; color:red; font-size:14px; font-style: italic;" ng-show="remove[stock.stock].isRecommendRemove == true;">
+                                            Remove recommendation 
+                                        </span>-->
+                </h3>   
+            </a>
+            <!--            <div class="deletePositionPage deletePosition" ng-click="deletePosition(stock, stock.stock)" style="right: 0px;">
+                            Remove position
+                        </div>-->
+
+            <div class="deletePositionPage deletePosition" ng-hide="remove[stock.stock].isRecommendRemove == true;" ng-click="deletePosition(stock, stock.stock)" style="right: 0px;">
+                Remove position
+            </div>
+            <div class="deletePositionPage deletePosition removeRecB" ng-show="remove[stock.stock].isRecommendRemove == true;" ng-click="deletePosition(stock, stock.stock)" style="right: 0px;">
+                Remove position recommended
+            </div>
+
+            <table>
+                <tr>
+                    <td style="width:7.9%;">
+                        <div class="label" style="color:rgb(174, 203, 193);">
+                            Entry date
+                        </div>
+                        {{stock.entry| date: "MM/dd/yy"}}
+                    </td>
+                    <td style="width:7.6%;">
+                        <div class="label" style="color:rgb(174, 203, 193);">
+                            Period
+                        </div>
+                        {{period(stock.entry)}} Days
+                    </td>
+                    <td style="width:8%;">
+                        <div class="label" style="color:rgb(174, 203, 193);">
+                            Expiry date
+                        </div>
+                        {{editDate(stock.expiry) | date
+                                    : "MM/dd/yy"}}
+                    </td>
+                    <td style="width:6%;">
+                        <div class="label" style="color:rgb(174, 203, 193);">
+                            Strike
+                        </div>
+                        {{stock.optionName}}
+                    </td>
+                    <td style="width:10%;">
+                        <div class="label" style="color:#7A777B;">
+                            Stock Avg. Price
+                        </div>
+                        {{stock.stockLast| currency}}
+                    </td>
+                    <td style="width:11%;">
+                        <div class="label" style="color:#7A777B;">
+                            Option Avg. Price
+                        </div>
+                        {{stock.optionPrice| currency}}
+                    </td>
+                    <td style="width:8%;">
+                        <div class="label" style="color:#7A777B;">
+                            Stock Last
+                        </div>
+                        {{currPrc[stock.leg].stockLast| currency}}
+                    </td>
+                    <td>
+                        <div class="label" style="color:#7A777B;">
+                            Option Last
+                        </div>
+                        {{currPrc[stock.leg].optionLast| currency}}
+                    </td>
+                    <td style="width:8%">
+                        <span>
+                            <div class="label">
+                                Stock PnL
+                            </div>
+                            {{pnl(currPrc[stock.leg].stockLast, stock.stockLast, stock.leg)}}
+                        </span>
+                    </td>
+                    <td style="width:8%;">
+                        <span>
+                            <div class="label">
+                                Option PnL
+                            </div>
+                            {{optionPnl(currPrc[stock.leg].optionLast, stock.optionPrice)}}
+                        </span>
+                    </td>
+                    <td style="width:7%;">
+                        <span ng-hide="period(stock.entry) < 2">
+                            <div class="label">
+                                Total PnL
+                            </div>
+                            {{totPnl(stock.stockLast, stock.optionPrice, currPrc[stock.leg].stockLast, currPrc[stock.leg].optionLast)}}
+                        </span>
+                    </td>
+                    <td style="width:9%;">
+                        <span ng-hide="period(stock.entry) < 2">
+                            <div class="label" style="color:#6B525D;">
+                                Enhanced Yield
+                            </div>
+                            {{enhancedTotal(totPnl(stock.stockLast, stock.optionPrice, currPrc[stock.leg].stockLast, currPrc[stock.leg].optionLast), pnl(currPrc[stock.leg].stockLast, stock.stockLast))}}
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="stock" ng-repeat="stock in userPositions.positions" ng-show="period(stock.entry) < 2 && expired[stock.stock] == false;">
             <!--<h3 style="border-bottom:1px solid #eee;" ng-click="moveToStock(stock.stock, stock.sQty)">-->
             <a ui-sref="dashboard.data({s:stock.stock, q:100})">
                 <h3 style="border-bottom:1px solid #eee;">
                     {{stock.stock}}
+                    <span style="padding-right:5px; color:red; font-size:14px; font-style: italic;" ng-show="currPrc[stock.stock].isRecommendRemove == true;">
+                        Remove recommendation 
+                    </span>
                 </h3>   
             </a>
-            <span ng-click="deletePosition(stock.position, stock.stock)" style="cursor:pointer;">
-                Remove
-            </span>
+            <div class="deletePositionPage deletePosition" ng-click="deletePosition(stock, stock.stock)" style="right: 0px;">
+                Remove position
+            </div>
 
             <table>
-                <tr ng-repeat="p in stock.position">
-                    <td style="width:9%">
-                        <div class="label">
+                <tr>
+                    <td style='width:7.9%;'>
+                        <div class="label" style="color:rgb(174, 203, 193);">
                             Entry date
                         </div>
-                        {{p.date| date: "dd/MM/yy"}}
+                        {{stock.entry| date: "MM/dd/yy"}}
                     </td>
-                    <td style="width:9%">
-                        <div class="label">
+                    <td style="width:7.6%;">
+                        <div class="label" style="color:rgb(174, 203, 193);">
+                            Period
+                        </div>
+                        {{period(stock.entry)}} Days
+                    </td>
+                    <td style='width:8%;'>
+                        <div class="label" style="color:rgb(174, 203, 193);">
                             Expiry date
                         </div>
-                        {{editDate(p.expiry) | date: "dd/MM/yy"}}
+                        {{editDate(stock.expiry) | date
+                                    : "MM/dd/yy"}}
                     </td>
-                    <td style="width:9%">
-                        <div class="label">
-                            Entry Price
-                        </div>
-                        {{p.entryPrice| currency}}
-                    </td>
-                    <td style="width:9%">
-                        <div class="label">
+                    <td style="width:6%;">
+                        <div class="label" style="color:rgb(174, 203, 193);">
                             Strike
                         </div>
-                        {{p.strike}}
+                        {{stock.optionName}}
                     </td>
-                    <td style="width:9%">
-                        <div class="label">
-                            Current
+                    <td style="width:10%;">
+                        <div class="label" style="color:#7A777B;">
+                            Stock Avg. Price
                         </div>
-                        {{currPrc[p.name].curr| currency}}
+                        {{stock.stockLast| currency}}
                     </td>
-                    <td style="width:9%">
-                        <div class="label">
-                            P&L
+                    <td style="width:11%;">
+                        <div class="label" style="color:#7A777B;">
+                            Option Avg. Price
                         </div>
-                        {{pnl(currPrc[p.name].curr, p.entryPrice)}}
+                        {{stock.optionPrice| currency}}
                     </td>
+                    <td style="width:8%;">
+                        <div class="label" style="color:#7A777B;">
+                            Stock Last
+                        </div>
+                        {{currPrc[stock.leg].stockLast| currency}}
+                    </td>
+                    <td>
+                        <div class="label" style="color:#7A777B;">
+                            Option Last
+                        </div>
+                        {{currPrc[stock.leg].optionLast| currency}}
+                    </td>
+                    <td style="width:8%;">
+                        <span>
+                            <div class="label">
+                                Stock PnL
+                            </div>
+                            {{pnl(currPrc[stock.leg].stockLast, stock.stockLast, stock.leg)}}
+                        </span>
+                    </td>
+                    <td style="width:8%;">
+                        <span>
+                            <div class="label">
+                                Option PnL
+                            </div>
+                            {{optionPnl(currPrc[stock.leg].optionLast, stock.optionPrice)}}
+                        </span>
+                    </td>
+                    <td style="width:7%;">
+                        <span ng-hide="period(stock.entry) < 2">
+                            <div class="label" style="color:#7A777B;">
+                                Total PnL
+                            </div>
+                            {{totPnl(stock.stockLast, stock.optionPrice, currPrc[stock.leg].stockLast, currPrc[stock.leg].optionLast)}}
+                        </span>
+                    </td>
+                    <td style="width:9%;">
+                        <span ng-hide="period(stock.entry) < 2">
+                            <div class="label" style="color:#7A777B;">
+                                Enhanced Yield
+                            </div>
+                            {{enhancedTotal(totPnl(stock.stockLast, stock.optionPrice, currPrc[stock.leg].stockLast, currPrc[stock.leg].optionLast), pnl(currPrc[stock.leg].stockLast, stock.stockLast))}}
+                        </span>
+                    </td>
+                    <!--                    <td>
+                                            <div class="label">
+                                                Entry Price
+                                            </div>
+                                            {{p.entryPrice| currency}}
+                                        </td>
+                                        
+                                        <td>
+                                            <div class="label">
+                                                Current
+                                            </div>
+                                            {{currPrc[p.name].curr| currency}}
+                                        </td>
+                                        <td>
+                                            <div class="label">
+                                                P&L
+                                            </div>
+                                            {{pnl(currPrc[p.name].curr, p.entryPrice)}}
+                                        </td>-->
                 </tr>
             </table>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+            
+</script>

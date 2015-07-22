@@ -5,7 +5,7 @@ $uri = explode(".", ltrim($_SERVER["HTTP_HOST"], "/"));
 if ($uri[0] == "local") {
     $server = "localhost";
     $un = "root";
-    $pwd = "root";
+    $pwd = "";
     $db = "iesdb";
 } else {
     $server = "62.219.78.224";

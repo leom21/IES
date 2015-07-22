@@ -67,6 +67,9 @@ h3{
 body{
     font-family: "Muli";
     background: lighten(@darkG, 18%);
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
 }
 
 footer{
@@ -206,9 +209,7 @@ footer{
             }
         }
         select{
-            position:absolute;
-            .input(98px,12px);
-            margin-top:-12px;
+            .input(100px,12px);
         }
     }
 
@@ -271,6 +272,7 @@ footer{
 }
 
 .userStats{
+    border-radius:4px;
     display:none;
     position:fixed;
     width: 90%;
@@ -280,14 +282,21 @@ footer{
     background:#fff;
     .translateMiddle;
     z-index:5;
-    padding:5px;
-    border:1px solid #000;
+    border:5px solid #fff;
     .ips{
         margin-bottom:25px;
     }
     .cont{
         overflow-y: scroll;
+        overflow-x: hidden;
         height:100%;
+        h3{
+            display:inline-block;
+        }
+        .minimize{
+            cursor:pointer;
+            display:inline-block;
+        }
     }
     ul{
         padding-left:27px !important; 
@@ -305,13 +314,89 @@ footer{
             font-size:14px !important;
         }
     }
+    #userInfo{
+        color:#656565;
+    }
+    #infoBlock{
+        background:#fff;
+        width:100%;
+        -webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+        -moz-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+        -ms-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+        padding-bottom:15px;
+        margin-top:-15px;
+    }
+    .section{
+        width:100%;
+        padding:25px 15px;
+        border-bottom:1px solid #aaa;
+    }
+    .bigStatsTable{
+        width: 97%;
+    }
+    
+    .statsTable{
+        font-size:14px !important;
+        thead{
+            padding:5px;
+        }
+        tr{
+            background:#efefef;
+            &:nth-child(odd){
+                background:#fff;   
+            }
+            td{
+                padding:5px;
+            }
+        }
+    }
+
+    .paginationList{
+        padding-left:0px !important;
+        margin-top:15px;
+        li:first-of-type{
+            color:#000 !important;
+            font-family:"Muli" !important;
+            font-size:14px !important;
+            font-weight: bold !important;
+            padding:5px !important;
+            width:25px !important;
+        }
+        li:last-of-type{
+            color:#000 !important;
+            font-family:"Muli" !important;
+            font-size:14px !important;
+            font-weight: bold !important;
+            padding:5px 5px 5px 0px !important;
+            width:25px !important;
+        }
+        li{
+            display:inline-block;
+            color:#000 !important;
+            font-weight: bold;
+            padding:5px;
+            width:25px;
+            span{
+                cursor:pointer;
+                padding:5px;
+            }
+        }
+    }
+}
+
+.on{
+    background:lighten(@green, 15%);
+    color:#fff;
+    border-radius: 3px;
+    transition:all .5s;
 }
 
 .close{
     background:red;
     border:daraken(red, 20%);
     position:absolute;
-    right:30px;
+    right:0px;
+    top: -30px;
     padding:5px;
     border:1px solid darken(red, 20%);
     font-family: bitter;

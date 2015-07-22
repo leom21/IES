@@ -95,18 +95,21 @@
             </thead>
             <tbody>
                 <tr ng-repeat="user in users" ng-class="{
-      
                         blocked: user.blocked == 1
                         }">
                     <td>
-                        <select class="selectL" ng-change="optionPick(options, user)" ng-model="options">
-                            <option value=""></option>
-                            <option>Edit</option>
-                            <option>Delete</option>
-                            <option ng-if="user.blocked == 0">Block</option>
-                            <option ng-if="user.blocked == 1">Unblock</option>
-                            <option>Statistics</option>
-                        </select>
+
+                        <form ng-submit="optionPick(options, user)">
+                            <select class="selectL" ng-model="options">
+                                <option value=""></option>
+                                <option>Edit</option>
+                                <option>Delete</option>
+                                <option ng-if="user.blocked == 0">Block</option>
+                                <option ng-if="user.blocked == 1">Unblock</option>
+                                <option>Statistics</option>
+                            </select>
+                            <input type="submit" value="GO">
+                        </form>
                     </td>
                     <td>
                         {{user.name}} 
@@ -177,8 +180,9 @@
                 </tr>
             </table>
         </form>
-        </h3>
     </div>
+
     <user-stats active="active" user="statsUser">
     </user-stats>
+
 </div>

@@ -1,11 +1,11 @@
 <div class="loadingView">
     Loading data, please wait.
-    <br/>
+    <br/><br/><br/><br/><br/>
+    <img src="gfx/loader.gif">
 </div>
-
 <ng-include src="'app/views/dashboard/searchBar.html?i=1001'">
 </ng-include>
-
+<div class="graphLine" style="display:none; position:absolute; z-index:5; width:100%; top: 250px; height:1px; background:#ccc;"></div>
 <div class="uberContainer">
     <div class="stockData" ng-controller="stockdataCtrl">
         <div class="msg" ng-show="noR == true">
@@ -39,6 +39,9 @@
                 Add to my watch list
             </span>
         </div>
+
+        <div class="line" style="position:absolute; width:0px; height:3px; background:#ccc; display:none;"></div>
+
         <div class="watchList" ng-click="removeWL(symbol)" ng-show="!noR">
             <span ng-show="onList == true">
                 Remove from watch list.
@@ -131,24 +134,23 @@
                 </tr>
             </table>
 
-            <table style="font-weight: bolder; margin: 0px 3px -10px; clear:both;" ng-if="gotPosition == true">
-                <tr>
-                    <td>
-                        Position - {{position.Name}}
-                    </td>
-                </tr>
-            </table>
 
             <table class="dataContainer stockR" ng-if="!gotPosition">
                 <tr class="title" style="color:#fff">
-                    <td colspan="3" style="font-size:12px !important;">
+                    <td colspan="2" style="font-size:12px !important;">
                         Strike
                     </td>
-                    <td colspan="3" style="font-size:12px !important;">
+                    <td colspan="2" style="font-size:12px !important;">
                         Expiry
                     </td>
                     <td colspan="2" style="font-size:12px !important;">
                         Score
+                    </td>
+                    <td colspan="2" style="font-size:14px !important;">
+                        &#916;
+                    </td>
+                    <td colspan="2" style="font-size:14px !important;">
+                        &#920;
                     </td>
                     <td colspan="2" style="font-size:12px !important;">
                         Expected yield
@@ -158,20 +160,26 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="2">
                         {{position.Type + "" + position.Strike}} 
                     </td>
-                    <td colspan="3">
-                        {{editDate(position.Expiry) | date: "dd/MM/yy"}}
+                    <td colspan="2">
+                        {{editDate(position.Expiry) | date: "MM/dd/yy"}}
                     </td>
                     <td colspan="2">
                         {{position.Score}} 
                     </td>
                     <td colspan="2">
+                        ${{position.Delta}} 
+                    </td>
+                    <td colspan="2">
+                        ${{position.Theta}} 
+                    </td>
+                    <td colspan="2">
                         {{cut(position.Pot * 100)}}%   
                     </td>
                     <td>
-                        {{position.Bid + position.Strike | number:2}}   
+                        {{position.SmartPrice + position.Strike| currency}}   
                     </td>
                 </tr>
             </table>
@@ -198,13 +206,14 @@
                         <tr ng-repeat="data in stockData.Options" ng-click="reDrawGraph($index, data)" ng-class="{'selected':$index == selectedRow || selectedRow == null && $index == 0}">
                             <td>{{data.Type}}</td>
                             <td>{{data.Strike}}</td>
-                            <td>{{editDate(data.Expiry) | date: "dd/MM/yy"}}</td>
+                            <td>{{editDate(data.Expiry) | date: "MM/dd/yy"}}</td>
                             <td>{{data.Days}}</td>
                             <td>{{cut(data.PVol * 100)}}%</td>
                             <td>{{cut(data.Iv * 100)}}%</td>
                             <td>{{cut(data.Brk * 100)}}%</td>
                             <td>{{cut(data.AnnPot * 100)}}%</td>
-                            <td>{{legPrice(data.Bid, data.Ask)}}</td>
+                            <!--<td>{{legPrice(data.Bid, data.Ask)}}</td>-->
+                            <td>{{data.SmartPrice| currency}}</td>
                             <td style="color:#fff; background:rgb(174, 203, 193);">{{data.Score}}</td>
                         </tr>
                     </tbody>

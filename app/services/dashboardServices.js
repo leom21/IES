@@ -1,36 +1,18 @@
 var dashboardServices = angular.module("dashBoardServicesModule", []);
 
 dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$q", "$rootScope", "$timeout", function (dashboardFactory, $state, $stateParams, $http, $q, $rootScope, $timeout) {
-        $rootScope.toolTipOn = true; //Activate or de-activate tooltips
+        $rootScope.toolTipOn = false; //Activate or de-activate tooltips
 
         if (sessionStorage.logged == undefined) { //Prevent user from entering a secured page directly.
             dashboardFactory.logout();
         }
-                        var h = $(window).height();
-                        $("body").css("height",h - 50 + "px");
-//
-//        $rootScope.$on('$stateChangeSuccess',
-//                function (event, toState, toParams, fromState, fromParams) {
-////                    $timeout(function () {
-//                    var h = $(document).height();
-//                    var state = toState.name.split(".")[1];
-//                    if (state == "data") {
-////                    $timeout(function () {
-//                        var h = $(window).height();
-//                        $(".footer").css("top", h -3 + "px");
-////                            console.log($("#wrapper").height());
-////                    }, 100);
-//                    } else {
-//                        var fT = $(".footer").offset().top;
-////                            if (fT < h) {
-////                                $(".footer").css("top", h - 25 + "px");
-////                            } else {
-////                        $(".footer").css("top", h + "px");
-//                        $(".footer").css("top", "initial");
-////                            }
-//                    }
-////                    }, 300);
-//                });
+
+        $(".rights").mouseenter(function () {
+            $(this).stop().animate({"width": "112px"}, 90).animate({"width": "131px"}, 210);
+        });
+        $(".rights").mouseleave(function () {
+            $(this).stop().animate({"width": "41px"}, 300);
+        });
 
         $rootScope.idleTime = 0;
         $rootScope.$on('$stateChangeSuccess',
@@ -38,7 +20,7 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                     if (toState.data.secured) {
                         if (toState.data.secured == true) {
                             if (localStorage["userDefs"] == null || localStorage["userDefs"] == 0 || !localStorage["userDefs"] || localStorage["userDefs"] == undefined) {
-                                if ($state.current.name !== "/") {
+                                if (fromState.name !== "") {
                                     $state.transitionTo("/");
                                 }
                             } else {
@@ -47,10 +29,13 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                                 function timerIncrement() {
                                     $rootScope.idleTime = $rootScope.idleTime + 1;
                                 }
-                                if ($rootScope.idleTime > 20) {
-                                    if ($state.current.name !== "/") {
+                                if ($rootScope.idleTime > 29) {
+                                    if (fromState.url !== "/" || fromState.url !== "^") {
                                         alert("It seems that you were inactive for the past 30 minutes or more.\n For security reasons, please login again.")
                                         dashboardFactory.logout();
+                                    } else {
+                                        $rootScope.idleTime = 0;
+                                        clearInterval($rootScope.idleInterval);
                                     }
                                 } else {
                                     $rootScope.idleTime = 0;
@@ -58,12 +43,19 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                             }
                         }
                     }
+
                     var s = toState.name.split(".");
+
+                    //Footer games
+                    $("body").css("height", h - 50 + "px");
+                    var h = $(window).height();
+
                     if (s[0] === "/") {
                         $(".footer").hide();
                     } else {
                         $(".footer").show();
                     }
+
                     if (s[0] === "dashboard") {
                         if (!localStorage["userDefs"]) { //Varify that user was logged and data from DB was loaded to localStorage.
                             $state.go("/");
@@ -76,7 +68,6 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                             $rootScope.userPositions = JSON.parse(localStorage["uP"]);
                             $rootScope.watchlist = localStorage["watchlist"];
                             $rootScope.sH = localStorage["searchHistory"];
-                            $rootScope.optionsWatch = JSON.parse(localStorage["optionsWatch"]);
                             $rootScope.clickHistory = JSON.parse(localStorage["cH"]);
                             if ($rootScope.sH == undefined || $rootScope.sH == null || $rootScope.sH == "null") {
                                 $rootScope.searchHistory = null;
@@ -96,6 +87,7 @@ dashboardServices.run(["dashboardFactory", "$state", "$stateParams", "$http", "$
                 }
         );
     }]);
+
 dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", "$rootScope", "$timeout", function ($log, $http, $q, $state, $rootScope, $timeout) {
         return{
             loginUser: function (username, password) {
@@ -132,8 +124,6 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                                 $rootScope.searchHistory = ls.searchHistory;
                                 localStorage["uP"] = ls.positions;
                                 $rootScope.userPositions = JSON.parse(localStorage["uP"]);
-                                localStorage["optionsWatch"] = ls.optionsWatch;
-                                $rootScope.optionsWatch = JSON.parse(localStorage["optionsWatch"]);
                                 $timeout(function () {
                                     $state.go("dashboard");
                                 }, 300);
@@ -142,6 +132,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             },
             logout: function () {
                 $rootScope.idleTime = 0;
+                clearInterval($rootScope.idleInterval);
                 $state.transitionTo("/");
                 localStorage.removeItem("userDefs");
                 localStorage.removeItem("searchHistory");
@@ -150,6 +141,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 localStorage.removeItem("optionsWatch");
                 localStorage.removeItem("cH");
                 localStorage.removeItem("tracker");
+                delete $rootScope.idleInterval;
                 delete $rootScope.ls;
             },
             searchHistory: function (id) {
@@ -231,14 +223,18 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 if (Array.isArray(s) == false) {
                     s = [s];
                 }
+                for(var i = 0; i<s.length; i++){
+                    s[i] = decodeURIComponent(s[i]);
+                }
 
                 $http.post("../WebService/PortfolioWS.asmx/GetIESData", {symbols: s})
                         .success(function (IESdata) {
                             if (IESdata["d"].length > 0) {
                                 _this.insertSearch(os);
+                            } else {
+                                $(".loadingView").fadeOut(250);
                             }
                             $rootScope.IESdata = IESdata["d"];
-                            $(".loadingView").delay(400).fadeOut(150);
                             return def.resolve(IESdata["d"]);
                         })
                         .error(function (data, status, headers, config) {
@@ -253,11 +249,10 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
              * s = string, Symbol
              * d = datetime, start date
              */
-            getStockHistory: function (s, d, n) {
+            getStockHistory: function (s, d, n, avg) {
                 var def = $q.defer();
-                $http.post("../WebService/PortfolioWS.asmx/GetIESHistoryData", {symbol: s, startDate: d, optionSymbol: n})
+                $http.post("../WebService/PortfolioWS.asmx/GetIESHistoryData", {symbol: s, startDate: d, optionSymbol: n, optionAvgPrice: avg})
                         .success(function (hisData) {
-                            $(".loadingView").delay(400).fadeOut(150);
                             return def.resolve(hisData["d"]);
                         })
                         .error(function (data, status, headers, config) {
@@ -276,7 +271,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
 
                     s = s[0].toUpperCase();
                     function send(id, sh) {
-                        var data = {id: id, q: sh};
+                        var data = {id: id, q: sh, symbol: s};
                         $http.post("app/php/dashboardApi.php", {act: "newHistory", data: data})
                                 .success(function (d) {
                                     if (d.length > 0) {
@@ -321,16 +316,31 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             },
             clickHistory: function (s) {
                 s = s.toUpperCase();
-                if ($rootScope.clickHistory !== null) {
-                    var ch = $rootScope.clickHistory;
-                    if (ch[s]) {
-                        ch[s]++;
-                    } else {
-                        ch[s] = 1;
+                var ch = $rootScope.clickHistory;
+//                if ($rootScope.clickHistory !== null) {
+//                    var ch = $rootScope.clickHistory;
+//                    if (ch[s]) {
+//                        ch[s]++;
+//                    } else {
+//                        ch[s] = 1;
+//                    }
+//                } else {
+//                    var ch = {};
+//                    ch[s] = 1;
+//                }
+                var symbols = [];
+                angular.forEach(ch["clickHistory"], function (item, key) {
+                    symbols.push(item.symbol);
+                    if (item.symbol == s) {
+                        item.clicksNum++;
+                        item.date = new Date().getTime();
                     }
-                } else {
-                    var ch = {};
-                    ch[s] = 1;
+                });
+
+                var found = $.inArray(s, symbols);
+                if (found === -1) {
+                    var x = {"symbol": s, "clickNum": 1, "date": new Date().getTime()};
+                    ch["clickHistory"].push(x);
                 }
 
                 ch = JSON.stringify(ch);
@@ -340,48 +350,29 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                             localStorage.setItem("cH", JSON.stringify(d));
                             $rootScope.clickHistory = JSON.parse(localStorage["cH"]);
                         });
-            },
-            optWatchH: function (s) {
-                function send(id, oW) {
-                    oW = JSON.stringify(oW);
-                    var data = {id: id, oW: oW};
-                    $http.post("app/php/dashboardApi.php", {act: "optWatchH", data: data})
-                            .success(function (d) {
-                                localStorage.setItem("optionsWatch", JSON.stringify(d));
-                                $rootScope.optionsWatch = JSON.parse(localStorage["optionsWatch"]);
-                            });
-                }
 
-                var oW = $rootScope.optionsWatch;
-                if (oW.optionsWatch.length !== 0) {
-                    var oArray = [];
-                    angular.forEach(oW.optionsWatch, function (o) {
-                        angular.forEach(o.pos, function (p) {
-                            oArray.push(p.name);
-                        });
-                    });
-                    angular.forEach(oW.optionsWatch, function (o) {
-                        if (o.stock == s.stock) {
-                            angular.forEach(o.pos, function (p) {
-                                //Stock exists in watching list. Position exists as well, add one to views.
-                                if (p.name == s.pos[0].name && jQuery.inArray(s.pos[0].name, oArray) !== -1) {
-                                    p.views++;
-                                    send($rootScope.userId, oW);
-                                }
-                                else if (p.name !== s.pos[0].name && jQuery.inArray(s.pos[0].name, oArray) == -1) {
-                                    //Stock exists, the position is not. Add ne position to list.
-                                    oArray.push(s.pos[0].name);
-                                    o.pos.push(s.pos[0]);
-                                    send($rootScope.userId, oW);
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    //Stock does not exists! Push new stock to watch list with the first position.
-                    oW.optionsWatch.push(s);
-                    send($rootScope.userId, oW);
-                }
+            },
+            clickHistoryUpdate: function () {
+                var ch = $rootScope.clickHistory;
+                var obj = new Object;
+                obj["clickHistory"] = [];
+
+                var arr = [];
+                angular.forEach(ch, function (item, key) {
+                    var prop = new Object;
+                    var x = {"symbol": key, "clicksNum": item, "date": new Date().getTime()};
+                    obj["clickHistory"].push(x);
+                });
+//                obj["clickHistory"].push(arr);
+                ch = JSON.stringify(obj);
+//                ch = ch.replace("]", "}");
+//
+//
+//                var data = {id: $rootScope.userId, ch: ch};
+//                $http.post("app/php/dashboardApi.php", {act: "clickHistoryUpdate", data: data})
+//                        .success(function (d) {
+//                            console.log(d);
+//                        });
             },
             takePosition: function (d) {
                 var def = $q.defer();
@@ -402,46 +393,50 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             },
             getPositionData: function (symbols) {
                 var def = $q.defer();
-                $http.post("../WebService/PortfolioWS.asmx/GetIESPositionData", {optionSymbols: symbols})
+                var _this = this;
+                $http.post("../WebService/PortfolioWS.asmx/GetIESPositionData", {positionsData: symbols})
                         .success(function (data) {
-                            console.log(data);
-                            $(".loadingView").delay(400).fadeOut(150);
+                            if (symbols.length === 1) {
+                                var symbol = symbols[0].OptionSymbol.split(" ");
+                                symbol = symbol[0];
+                                console.log(symbol);
+                                _this.insertSearch(symbol);
+                            }
                             return def.resolve(data["d"]);
                         })
                         .error(function (data, status, headers, config) {
                             $rootScope.IESdata = [];
-                            $(".loadingView").delay(400).fadeOut(150);
+
                             $state.transitionTo("dashboard.noRes");
                             return def.resolve([]);
                         });
                 return def.promise;
             },
-            deletePosition: function (d) {
+            /*
+             * 
+             * @param {string} d (symbol)
+             * @param {object} o (position object)
+             */
+            deletePosition: function (d, o) {
                 var def = $q.defer();
                 var id = $rootScope.userId;
                 var uP = $rootScope.userPositions;
                 var data = {
                     id: id,
-                    pos: uP
+                    pos: uP,
+                    removed: true,
+                    removedPosition: o
                 };
+
                 angular.forEach(uP.positions, function (p, i) {
                     if (d == p.stock) {
                         uP.positions.splice(i, 1);
                         data.pos = uP;
                     }
                 });
+
                 $http.post("app/php/dashboardApi.php", {act: "takePosition", data: data})
                         .success(function (dphp) {
-//                            $http.post("../WebService/PortfolioWS.asmx/ClearIESPosition", {symbol: d})
-//                                    .success(function (data) {
-//                                        console.log(data);
-//                                    })
-//                                    .error(function (data, status, headers, config) {
-//                                        $rootScope.IESdata = [];
-//                                        $(".loadingView").delay(400).fadeOut(150);
-//                                        $state.transitionTo("dashboard.noRes");
-//                                        return def.resolve([]);
-//                                    });
                             localStorage.setItem("uP", JSON.stringify(dphp));
                             $rootScope.userPositions = JSON.parse(localStorage["uP"]);
                             return def.resolve("OK");
@@ -457,6 +452,8 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                 }
                 var data = {
                     id: id,
+                    date: new Date().getTime(),
+                    symbol: s,
                     wl: wl
                 };
                 $http.post("app/php/dashboardApi.php", {act: "addToWL", data: data})
@@ -467,9 +464,9 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
                         });
                 return def.promise;
             },
-            removeWL: function (str) {
+            removeWL: function (str, s) {
                 var def = $q.defer();
-                var data = {id: $rootScope.userId, wl: str};
+                var data = {id: $rootScope.userId, wl: str, date: new Date().getTime(), symbol: s};
                 $http.post("app/php/dashboardApi.php", {act: "removeWL", data: data})
                         .success(function (d) {
                             localStorage.setItem("watchlist", d);
@@ -480,6 +477,7 @@ dashboardServices.factory("dashboardFactory", ["$log", "$http", "$q", "$state", 
             }
         };
     }]);
+
 dashboardServices.factory("toolTip", ["$rootScope", function ($rootScope) {
         return{
             showContent: function (type) {
@@ -493,6 +491,81 @@ dashboardServices.factory("toolTip", ["$rootScope", function ($rootScope) {
                 if ($rootScope.toolTipOn == true) {
                     return content[type];
                 }
+            }
+        };
+    }]);
+
+dashboardServices.factory("utils", ["$log", "$http", "$q", "$state", "$rootScope", "$timeout", function ($log, $http, $q, $state, $rootScope, $timeout) {
+        return{
+            period: function (d) {
+                var d = new Date(d);
+                var eYear = d.getFullYear();
+                var eMonth = d.getMonth();
+                var eDay = d.getDate();
+
+                var entry = new Date(eYear, eMonth, eDay);
+                var today = new Date();
+                today = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                var millisecondsPerDay = 1000 * 60 * 60 * 24;
+                var millisBetween = today.getTime() - entry.getTime();
+                var days = millisBetween / millisecondsPerDay;
+                return Math.floor(days);
+
+//                var today = new Date().getTime();
+//                var timeDiff = Math.abs(d - today);
+//                var diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
+//                return diffDays;
+            },
+            pnl: function (c, e) {
+                var p = ((c / e) - 1) * 100;
+                var v = (Math.floor(100 * parseFloat((p).toFixed(2))) / 100);
+                if (v == -0.00 || v == 0 || v == -0 || v == -0.00) {
+                    return "0.00%";
+                } else {
+                    return (Math.floor(100 * parseFloat((p).toFixed(2))) / 100) + "%";
+                }
+            },
+            editDate: function (d) {
+                d = d.substring(0, d.length - 2);
+                d = d.substring(6, d.length);
+                return d;
+            },
+            totPnl: function (sAvgPrice, oAvgPrice, sLast, oLast) {
+                var productPrice = sAvgPrice - oAvgPrice;
+                var currProductPrice = sLast - oLast;
+                var tot = parseFloat(((currProductPrice / productPrice) - 1) * 100);
+                return (Math.floor(100 * parseFloat((tot).toFixed(2))) / 100) + "%";
+            },
+            pnlOptionChange: function (c, e) {
+//                if (e - c > 0) {
+//                    return ((Math.abs((c - e) / e) * 100) - 1).toFixed(2) + "%";
+//                } else {
+//                    if (((Math.abs((c - e) / e) * 100) - 1).toFixed(2) == 0.00) {
+//                        return "0.00%";
+//                    } else {
+                //                        return "-" + ((Math.abs((c - e) / e) * 100) - 1).toFixed(2) + "%";
+//                    }
+                //                }
+//                if (e - c > 0) {
+                    var p = ((c / e) - 1) * 100;
+                    var v = (Math.floor(100 * parseFloat((p).toFixed(2))) / 100);
+                    if (v == -0.00 || v == 0 || v == -0 || v == -0.00) {
+                        return "0.00%";
+                    } else {
+                        return (Math.floor(100 * parseFloat((p).toFixed(2))) / 100) + "%";
+                    }
+//                }
+            }, getDate: function (date) {
+                var date = new Date(date);
+                var day = date.getDate();
+                var month = date.getMonth();
+                var year = date.getFullYear();
+                var hour = date.getHours();
+                var minute = date.getMinutes();
+                var second = date.getSeconds();
+                var time = month + 1 + "/" + day + "/" + year + " " + hour + ':' + minute + ':' + second;
+                return time;
             }
         };
     }]);

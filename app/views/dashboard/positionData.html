@@ -1,5 +1,6 @@
 <div class="positionData">
 
+
     <form ng-model="takeP" ng-init="takeP.optionName = position.Type + '' + position.Strike">
         <table class="takePositionT" ng-show="!gotPositionD">
             <tr>
@@ -11,29 +12,29 @@
                 <td style="font-size:12px;">
                     Stock Quantity:
                     <br/> 
-                    <input type="number" style="width:80px;" min="100" step="100" class="optQty" placeholder="Stock Quantity" ng-model="takeP.qty" ng-change="isChanged(takeP)">
+                    <input type="text" class="positionInput optQty" ng-model="takeP.qty" ng-change="isChanged(takeP)">
                     <div class="PqtyE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
                     </div>
                 </td>
                 <td style="font-size:12px;">
                     Quantity:
                     <br/> 
-                    <input type="number" style="width:80px;" min="1" step="1" placeholder="Options Quantity" ng-value="optQty = optQ()" ng-model="optQty" ng-change="isChanged(takeP)" readonly>
+                    <input type="number" class="positionInput" min="1" step="1" placeholder="Options Quantity" ng-value="optQty = optQ()" ng-model="optQty" ng-change="isChanged(takeP)" readonly>
                 </td>
-                <td style="font-size:12px;">
+                <td style="font-siopze:12px;">
                     <span>
                         Option price:
                     </span><br/>
-                    <input type="text" style="width:90px;" placeholder="Reflected price" ng-model="takeP.refPrice" ng-change="isChanged(takeP)" readonly>
+                    <input type="text" class="positionInput" placeholder="Reflected price" ng-model="takeP.refPrice" ng-change="isChanged(takeP)" readonly>
                 </td>
                 <td style="font-size:12px;">
                     <span>
                         Premium value:
                     </span><br/>
-                    <input type="text" placeholder="Premium price" ng-value="premiumP = premium()" ng-model="premiumP" ng-change="isChanged(takeP)">
+                    <input type="text" class="positionInput" placeholder="Premium price" ng-value="premiumP = premium()" ng-model="premiumP" ng-change="isChanged(takeP)" readonly>
                 </td>
                 <td>
-                    <div ng-if="taken == taken" class="takePosition" ng-click="scrollPositon();
+                    <div ng-if="taken == taken" class="takePosition posResponsive" ng-click="scrollPositon();
                         takePosition(index, validate, fData, $event);
                         taken = !taken">
                         Take position
@@ -43,7 +44,15 @@
         </table>
     </form>
 
+    <table style="font-weight: bolder; margin: 0px 3px -10px; clear:both;">
+
+    </table>
     <table class="dataContainer userP" style="margin:0px 3px 10px 3px; !important" ng-show="gotPositionD == true">
+        <tr>
+            <td colspan="12" style="font-weight: bolder; text-align: left; padding: 5px 0px; margin: 0px -3px -10px; clear:both;">
+                Position - {{arr[0].leg}}
+            </td>
+        </tr>
         <tr class="title" style="color:#fff; font-size:12px;">
             <td colspan="2" style="font-size:12px !important;">
                 Stock Quantity
@@ -114,17 +123,16 @@
                 {{pos.optionPrice| currency}}
             </td>
             <td colspan="2">
-                {{position.Last| currency}}
+                {{position.Ask| currency}}
             </td>
             <td colspan="2">
-                {{pnlOptionChange(position.Last, pos.optionPrice)}}
+                {{pnlOptionChange(position.Ask, pos.optionPrice)}}
             </td>
             <td colspan="2">
                 {{expiry(pos.expiry)}} days
             </td>
         </tr>
     </table>
-    <!--{{histLength}}-->
     <table class="dataContainer userP" style="margin:0px 3px 10px 3px; !important" ng-show="gotPositionD == true && histLength > 1">
         <tr class="title" style="color:#fff; font-size:12px !important;">
             <td colspan="2" style="font-size:12px !important;">
@@ -143,6 +151,7 @@
                 Enhanced Yield
             </td>
         </tr>
+
         <tr ng-repeat="pos in arr">
             <td colspan="2">
                 {{period(pos.entry)}} days
@@ -151,13 +160,46 @@
                 {{pnl(stData.Last, pos.stockLast)}}
             </td>
             <td colspan="2">
-                {{pnlOptionChange(position.Last, pos.optionPrice)}}
+                {{optPnl}}
+                <!--{{optionPnl(position.Ask, pos.optionPrice)}}-->
             </td>
             <td colspan="2">
-                {{totPnl(pos.stockLast, pos.optionPrice, stData.Last, position.Last)}}
+                {{totPnl(pos.stockLast, pos.optionPrice, stData.Last, position.Ask)}}
             </td>
             <td colspan="2">
-                {{enhancedTotal(totPnl(pos.stockLast, pos.optionPrice, stData.Last, position.Last), pnl(stData.Last, pos.stockLast))}}
+                <!--{{enhancedTotal(totPnl(pos.stockLast, pos.optionPrice, stData.Last, position.Ask), pnl(stData.Last, pos.stockLast))}}-->
+                {{enhancedTotal()}}
+            </td>
+        </tr>
+    </table>
+
+    <table class="dataContainer userP" style="margin:0px 3px 10px 3px;" ng-show="gotPositionD == true && histLength > 1">
+        <tr class="title" style="color:#fff; font-size:12px !important;">
+            <td  colspan="1" style="font-size:12px !important;">
+                &#916;
+            </td>
+            <td  colspan="1" style="font-size:12px !important;">
+                &#915;
+            </td>
+            <td  colspan="1" style="font-size:12px !important;">
+                &#920;
+            </td>
+            <td  colspan="1" style="font-size:12px !important;">
+                &#957;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                ${{position.Delta}}
+            </td>
+            <td colspan="1">
+                ${{position.Gamma}}
+            </td>
+            <td colspan="1">
+                ${{position.Theta}}
+            </td>
+            <td colspan="1">
+                ${{position.Vega}}
             </td>
         </tr>
     </table>
@@ -182,19 +224,56 @@
                 {{pnl(stData.Last, pos.stockLast)}}
             </td>
             <td colspan="2">
-                {{pnlOptionChange(position.Last, pos.optionPrice)}}
+                {{optionPnl(position.Ask, pos.optionPrice)}}
             </td>
         </tr>
     </table>
 
+
+    <table class="dataContainer userP" style="margin:0px 3px 10px 3px;" ng-show="gotPositionD == true && histLength < 2">
+        <tr class="title" style="color:#fff; font-size:12px !important;">
+            <td  colspan="1" style="font-size:12px !important;">
+                &#916;
+            </td>
+            <td  colspan="1" style="font-size:12px !important;">
+                &#915;
+            </td>
+            <td  colspan="1" style="font-size:12px !important;">
+                &#920;
+            </td>
+            <td  colspan="1" style="font-size:12px !important;">
+                &#957;
+            </td>
+        </tr>
+        <tr>
+            <td colspan="1">
+                ${{position.Delta}}
+            </td>
+            <td colspan="1">
+                ${{position.Gamma}}
+            </td>
+            <td colspan="1">
+                ${{position.Theta}}
+            </td>
+            <td colspan="1">
+                ${{position.Vega}}
+            </td>
+        </tr>
+    </table>
     <table class="takePositionT" ng-show="gotPositionD == true" style="margin-top:10px;">
         <tr>
-            <td colspan="4"></td>
+            <td colspan="4" style="text-align: right; color:red; font-size:14px; font-style: italic">
+                <!--                <span style="padding-right:5px;" ng-show="removeIt == true">
+                                    Remove recommendation 
+                                </span>-->
+            </td>
             <td colspan="1" style="width:120px;">
-                <div class="deletePosition" ng-click="deletePosition(arr, symbol)" ng-show="gotPositionD == true">
+                <div class="deletePosition" style="font-weight:normal;" ng-click="deletePosition(arr, symbol)" ng-show="gotPositionD == true" ng-hide="removeIt == true">
                     Remove position
                 </div>
-
+                <div class="deletePosition removeRecB" style="font-weight:normal;" ng-click="deletePosition(arr, symbol)" ng-show="gotPositionD == true && removeIt == true">
+                    Remove position recommended
+                </div>
             </td>
         </tr>
     </table>

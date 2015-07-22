@@ -26,7 +26,6 @@ adminServices.factory("adminFactory", function ($rootScope, $http, $q, $state) {
             var def = $q.defer();
             $http.post("app/php/adminApi.php", {act: "getAllUsers"})
                     .success(function (d) {
-                        console.log(d);
                         var admins = [];
                         var users = [];
                         angular.forEach(d, function (row) {
@@ -127,6 +126,17 @@ adminServices.factory("adminFactory", function ($rootScope, $http, $q, $state) {
                         return def.resolve({admins: admins, users: users});
                     });
             return def.promise;
+        }
+    };
+});
+
+adminServices.factory("adminParser", function ($rootScope, $http, $q, $state) {
+    return{
+        period: function (date) {
+            var today = new Date().getTime();
+            var timeDiff = Math.abs(date - today);
+            var diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
+            return diffDays;
         }
     };
 });

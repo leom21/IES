@@ -2,71 +2,92 @@
     <h1>
         Find a stock
     </h1>
+    <div class="searchContainer">
+        <form name="SSF" ng-submit="moveToStock(searchQ)" novalidate>
 
-    <div ng-mouseleave="closeMe = true;
-            focus = false;" ng-mouseenter="focus = true;">
-        <div class="searchContainer">
-            <form name="SSF" ng-submit="moveToStock(searchQ)" novalidate>
+            <div>
                 <div class="stockSearch sDiv">
                     <p>
-                        Stock:<span class="symE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
+                        Stock:<span class="symE" style="position:absolute; margin-top:1px; color:red; font-size:12px; padding-top: 3px; padding-left: 5px;">
                         </span>
                         <br/>
                     </p>
-                    <div class="bar">
-                        <div class="value"></div>
-                        <div class="progress">
-                        </div>
-                    </div>
-                    <div class="showHistoryList" ng-click="dropDownList();
-                        closeMe = false">
-                        &#9660;
-                    </div>
-                    <input type="text" ng-model="searchQ" class="srcQ searchQ" placeholder="Symbol" ng-keyup="showList($event);
-                            closeMe = true" ng-focus="focus = true">  
+                    <!--                    <div class="clearNoIE" ng-show="searchQ.length > 0" ng-click="clearNoIE(); searchQ = ''" style="cursor:pointer; position: absolute; margin-left:147px; margin-top:4px; font-weight: bold;">
+                                            X
+                                        </div>-->
+                    <input type="text" style="width:140px !important; padding-right:15px;" ng-model="searchQ" class="srcQ searchQ" placeholder="Symbol" ng-focus="showIt();" ng-keyup="focus = true;" ng-keydown="moveSelect($event);"> 
 
-                    <ul class="searchHistoryList" ng-hide="closeMe == true">
-                        <li ng-repeat="q in searchHistory track by $index| limitTo:5" ng-click="clickedStock(q.q);
-                                closeMe = true;
-                                focus = false;">
+                    <ul class="searchHistory">
+                        <li class="listTitle" style="cursor: default;">
+                            Search history:
+                        </li>
+                        <li ng-repeat="q in searchHistory track by $index | limitTo:5" ng-click="clickedStock(q.q);
+                                            searchQ = q.q;
+                                            closeMe = true;
+                                            focus = false;">
                             {{q.q}}
                         </li>
-                    </ul>
-                    <ul class="searchHistory" ng-if="focus == true">
-                        <li ng-repeat="q in universe| searchHistory:searchQ" ng-click="clickedStock(q.symbol);
-                                closeMe = false;
-                                focus = false;">
+                        <!--                    <li class="searchItem" ng-show="uniList.length == 0" style="border-top:1px solid #6B525D;" ng-class-odd="'oddRow'">
+                                                <span style="font-size:12px; color:red; font-style: italic">Symbol was not found.</span>
+                                            </li>-->
+                        <li class="searchItem listTitleSym" ng-show="uniList.length > 0;" style="cursor: default;">
+                            Symbols:
+                        </li>
+                        <li class="universeLine" ng-repeat="q in uniList = (universe | searchHistory:searchQ)" ng-click="clickedStock(q.symbol);
+                                            searchQ = q.symbol;
+                                            focus = false;" ng-hide="existsInHistory(q.symbol) == true;">
+
                             {{q.symbol}}
                         </li>
                     </ul>
-                </div>
-                <div class="stockSearch sDiv">
-                    <p>
-                        Held quantity:
-                        <span class="qtyE" style="position:absolute; margin-top:1px; color:red; font-size:12px;">
-                        </span>
-                        <br/>
-                    </p>
-                    <input ng-init="hQty = 100" type="number" value="" min="100" ng-model="hQty" class="hQty searchQ" ng-focus="closeMe = true;
-                            focus = false; (searchQ.length> 0)? hQty = 100 : 100">
+                    <!--                    <ul class="searchHistory" ng-if="focus == true" style="margin-left:174px; width:160px; text-align: left;">
+                                            <li class="listTitle">
+                                                Search history:
+                                            </li>
+                                            <li ng-repeat="q in searchHistory track by $index| limitTo:5" ng-click="clickedStock(q.q);
+                                                        searchQ = q.q;
+                                                        closeMe = true;">
+                                                {{q.q}}
+                                            </li>
+                                            <li ng-repeat="q in uniList = (universe| searchHistory:searchQ | limitTo:15)" ng-click="clickedStock(q.symbol);
+                                                        searchQ = q.symbol;
+                                                        focus = false;" ng-hide="existsInHistory(q.symbol) == true;">
+                                                <ol class="listTitleSym" ng-if="$index == 0" style="width:150px;">
+                                                    Symbols:
+                                                </ol>
+                                                {{q.symbol}}
+                                            </li>
+                                        </ul>-->
 
                 </div>
-                <div class="stockSearch sDiv">
-                    <p>
-                        Target Price:<br/>
-                    </p>
-                    <input type="text" class="searchQ" ng-focus="closeMe = true;
-                            focus = false"> 
-                </div>
-                <div class="stockSearch sDiv">
-                    <p>
-                        Term:<br/>
-                    </p>
-                    <input type="text" class="searchQ" ng-focus="closeMe = true;
-                            focus = false"> 
-                </div>
-                <input type="submit" value="Find">
-            </form>
-        </div>
+            </div>
+            <div class="stockSearch sDiv">
+                <p>
+                    Held quantity:
+                    <span class="qtyE" style="position:absolute; margin-top:1px; color:red; font-size:12px; padding-top: 3px; padding-left: 5px;">
+                    </span>
+                    <br/>
+                </p>
+                <input ng-init="hQty = 100" type="text" ng-model="hQty" class="hQty searchQ" ng-focus="closeMe = true;
+                                    focus = false;">
+
+            </div>
+            <div class="stockSearch sDiv">
+                <p>
+                    Target Price:<br/>
+                </p>
+                <input type="text" class="searchQ" ng-focus="closeMe = true;
+                                    focus = false"> 
+            </div>
+            <div class="stockSearch sDiv">
+                <p>
+                    Term:<br/>
+                </p>
+                <input type="text" class="searchQ" ng-focus="closeMe = true;
+                                    focus = false"> 
+            </div>
+            <input type="submit" value="Find">
+        </form>
     </div>
 </div>
+<!--</div>-->

@@ -1,30 +1,31 @@
-<div class="page" ng-controller="dashboardCtrl">
+<div class="page" ng-controller="dashboardCtrl" ng-click="bodyClick($event)">
     <div class="dashBoardMenu">
         <ul>
             <li class="logo">
                 IES
             </li>
-            <li>
+            <li ui-sref-active="activePage">
                 <a ui-sref=".query">
                     Query
                 </a>
             </li>
-            <li>
+            <li ui-sref-active="activePage">
                 <a ui-sref=".positions">
                     My positions
                 </a>
             </li>
-            <li>
+            <li ui-sref-active="activePage">
                 <a ui-sref=".watchlist">
                     My watch list
                 </a>
             </li>
             <li style="float:right; margin-top:8.2px; text-align:right; margin-right:-12px;">
-                <span style="padding-right:25px">
+                <span style="padding-right:50px">
                     Hello, {{username}}
+                    <img src="gfx/IAlogo.png" alt="IntelAgent LTD" style="width:24px; position:absolute; margin-top:-3px; margin-left:10px;">
                 </span>
-                <img style="margin-right: 25px; height: 27px; display: inline-block; vertical-align: middle; margin-top: -3px;" src="gfx/IAlogo.png" alt="IntelAgent LTD">
-                <span ng-click="logout()" style="cursor:pointer;">
+                <!--                <img style="margin-right: 25px; height: 27px; display: inline-block; vertical-align: middle; margin-top: -3px;" src="gfx/IAlogo.png" alt="IntelAgent LTD">-->
+                <span ng-click="logout()" style="cursor:pointer; padding-right: 14px;">
                     Logout
                 </span>
             </li>
@@ -32,7 +33,6 @@
     </div>
     <div class="toolTip">
     </div>
-
     <div class="innerView" ui-view autoscroll="false">
     </div>
 </div>

@@ -11,7 +11,7 @@ adminCtrl.controller("adminCtrl", function ($rootScope, $scope, $state, adminFac
     };
 });
 
-adminCtrl.controller("ctrlCtrl", function ($rootScope, $scope, $state, adminFactory) {
+adminCtrl.controller("ctrlCtrl", function ($rootScope, $scope, $state, adminFactory, adminParser) {
     adminFactory.getAllUsers().then(function (d) {
         $rootScope.admins = d.admins;
         $rootScope.users = d.users;
@@ -22,6 +22,7 @@ adminCtrl.controller("ctrlCtrl", function ($rootScope, $scope, $state, adminFact
         $("input[name='editUsername']").val("");
         $("input[name='editPassword']").val("");
         $("input[name='editEmail']").val("");
+        delete $rootScope.currUser;
     }
 
     $scope.closeUserEdit = function () {
@@ -84,6 +85,7 @@ adminCtrl.controller("ctrlCtrl", function ($rootScope, $scope, $state, adminFact
         $("input[name='editUsername']").val(u.username);
         $("input[name='editPassword']").val(u.password);
         $("input[name='editEmail']").val(u.email);
+        
         switch (e) {
             case "Edit":
                 $rootScope.action = "Edit ";
@@ -121,7 +123,6 @@ adminCtrl.controller("ctrlCtrl", function ($rootScope, $scope, $state, adminFact
                 }
                 break;
             case "Statistics":
-                console.log($rootScope.currUser);
                 $rootScope.statsUser = u;
                 if (u.ips == null) {
                     alert("No data available yet!");
@@ -132,72 +133,6 @@ adminCtrl.controller("ctrlCtrl", function ($rootScope, $scope, $state, adminFact
                     $(".black").fadeIn(200);
                 }
                 break;
-        }
-    };
-});
-
-adminCtrl.directive("userStats", function ($rootScope, $http) {
-    return {
-        retrict: "E",
-        replace: false,
-        templateUrl: "app/views/userStats.html",
-        scope: {user: '=user', active: '=active'},
-        link: function (scope, element, attrs) {
-            var data = [];
-
-            scope.$watch("user", function (oldValue, newValue) {
-                if (oldValue !== undefined) {
-                    scope.name = scope.user.name;
-                    var ips = scope.user.ips;
-                    scope.numIps = ips.split(",");
-                    scope.ips = scope.user.ips;
-
-                    var d = {
-                        key: "Stocks",
-                        values: []
-                    };
-
-                    var cH = JSON.parse(scope.user.clickHistory);
-                    angular.forEach(cH, function (c, k) {
-                        if (c > 0) {
-                            var tmp = {"label": k, "value": c};
-                            d.values.push(tmp);
-                        }
-                    });
-                    data.push(d);
-
-                    nv.addGraph(function () {
-                        var chart = nv.models.discreteBarChart()
-                                .x(function (d) {
-                                    return d.label
-                                })
-                                .y(function (d) {
-                                    return d.value
-                                })
-                                .staggerLabels(true)
-                                .tooltips(false)
-                                .showValues(true);
-
-                        chart.height(400);
-
-                        d3.select(element.find("svg")[0])
-                                .datum(data)
-                                .call(chart);
-
-//                        nv.utils.windowResize(chart.update);
-
-                        return chart;
-                    });
-                }
-
-            });
-
-            scope.closeStats = function () {
-                $rootScope.currUser = undefined;
-                data = [];
-                $(".userStats").fadeOut(200);
-                $(".black").fadeOut(200);
-            };
         }
     };
 });

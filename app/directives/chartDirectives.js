@@ -15,6 +15,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                             color: "#f2f2f2"
                         }
                     ];
+
                     nv.addGraph(function () {
                         var chart = nv.models.lineChart();
                         chart.useInteractiveGuideline(false)
@@ -29,6 +30,8 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                             var dataset = ["-10", "-6", "-2", "2", "6", "10"];
                             return dataset;
                         });
+
+
                         chart.y2Axis.tickValues(function (d) {
                             var y2d = ["0", "5", "10", "15", "20", "25"];
                             return y2d;
@@ -55,6 +58,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                         }
 
                         draw(bellData);
+
                         $rootScope.$watch('curX', function (oldValue, newValue) {
                             if (oldValue !== undefined) {
                                 $timeout(function () {
@@ -62,7 +66,6 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                     var w = $(svgE).width();
                                     var prc = (($rootScope.curX / 1000) * 61) / 100;
                                     var bPnt = $rootScope.curX * 100;
-
                                 }, 1);
                             }
                         });
@@ -90,11 +93,9 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                             var dataset = [];
                             return dataset;
                         });
-
                         chart.xAxis.tickFormat(function (d, i) {
                             return d + "$";
                         });
-
                         var svgE = element.find("svg")[0];
                         var w = $(svgE).width();
                         var h = $(svgE).height();
@@ -109,7 +110,6 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                             w = $(svgE).width();
                             h = $(svgE).height();
                         });
-
                         d3.select(element.find("svg")[0]).append("text")
                                 .attr("x", w / 2)
                                 .attr("y", h)
@@ -123,7 +123,6 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 .style("text-anchor", "middle")
                                 .attr("transform", "translate(20,150) rotate(-90)")
                                 .text("Profit");
-
                         function draw(data) {
                             d3.select(element.find("svg")[0])
                                     .datum(data)
@@ -136,7 +135,7 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
 
                         scope.$watch('data', function (newValue, oldValue) {
                             if (oldValue !== newValue) {
-                                var last = $rootScope.stockLast;
+                                var last = $rootScope.stockData.Last;
                                 var tgtPrc = $rootScope.moData.tgtPrc;
                                 var fS = scope.data;
                                 var xs = [];
@@ -144,80 +143,39 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 var ysR = [];
                                 var eVals = [];
                                 var rVals = [];
-                                var premium = (fS.Ask + fS.Bid) / 2;
-                                var profitPoint = (fS.Bid * 100) / premium;
-                                profitPoint = profitPoint.toFixed(2);
-                                var lost = premium / fS.Strike;
-                                var en = parseFloat(profitPoint) + parseFloat((profitPoint * 0.004));
-                                var re = parseFloat(en) + parseFloat((en * 0.004));
-                                var mid = ((fS.Bid + fS.Ask) / 2);
-                                var brk = fS.Strike + mid;
-
 //
-//                                var xL = [];
-//                                if (last > 120) {
-//                                    if (Math.floor((last * (1 + (fS.PVol))) / 10) * 10 < fS.Strike) {
-//                                        var postLast = (Math.floor((last * (1 + (fS.PVol))) / 10) * 10) + 10;
-//                                    } else {
-//                                        var postLast = Math.floor((last * (1 + (fS.PVol))) / 10) * 10;
-//                                    }
-
-
-//                                    xs.push(
-//                                            Math.floor((last * (1 - (2 * fS.PVol))) / 10) * 10,
-////                                            Math.floor((last * (1 - (fS.PVol))) / 10) * 10,
-//                                            last,
-//                                            postLast,
-//                                            Math.floor((last * (1 + (2 * fS.PVol))) / 10) * 10
-//                                            );
-//                                } else if (last < 120 || last > 50) {
-//                                    xs.push(
-//                                            Math.floor(last * (1 - (2 * fS.PVol))),
-////                                            Math.floor(last * (1 - (fS.PVol))),
-//                                            last,
-//                                            fS.Strike + premium,
-////                                            Math.floor(last * (1 + (fS.PVol))),
-//                                            Math.floor(last * (1 + (2 * fS.PVol)))
-//                                            );
-//                                } else if (last < 50) {
-//                                    xs.push(
-//                                            Math.floor(last * (1 - (2 * fS.PVol)) / 2),
-////                                            Math.floor(last * (1 - (fS.PVol)) / 2),
-//                                            last,
-//                                            fS.Strike + premium,
-////                                            Math.floor(last * (1 + (fS.PVol)) / 2),
-//                                            Math.floor(last * (1 + (2 * fS.PVol)) / 2)
-//                                            );
-//                                }
+                                var tickMarks = [
+                                    (Math.round(last * (1 - (2 * fS.PVol)))),
+                                    Math.floor(last * (1 - (fS.PVol))),
+                                    last,
+                                    Math.ceil(last * (1 + (fS.PVol))),
+                                    (Math.round(last * (1 + (2 * fS.PVol))))
+                                ];
 //                               
                                 if (last > 50) {
                                     xs.push(Math.round(last * (1 - (2 * fS.PVol))),
                                             fS.Strike,
-                                            fS.Strike + premium,
+                                            fS.Strike + fS.Bid,
                                             Math.round(last * (1 + (2 * fS.PVol))));
                                 } else {
                                     xs.push(
-                                            Math.floor(last * (1 - (2 * fS.PVol))),
+                                            (Math.round(last * (1 - (2 * fS.PVol)))),
                                             fS.Strike,
-                                            fS.Strike + premium,
-                                            Math.floor(last * (1 + (2 * fS.PVol))));
-//                                    chart.forceX([Math.round(last * (1 - (2 * fS.PVol))), Math.round(last * (1 + (2 * fS.PVol)))]);
+                                            fS.Strike + fS.Bid,
+                                            Math.round((last) * (1 + (2 * fS.PVol))));
                                 }
 
                                 xs.sort(function (a, b) {
                                     if (a > b) {
                                         return 1;
                                     }
-                                }
-                                );
-                                var strikePct = (last * 10) / 100;
-                                var strikePct1 = Math.round(last * (1 - (2 * fS.PVol)));
+                                });
                                 for (var i = 0; i < xs.length; i++) {
                                     if (xs[i] < fS.Strike) {
-                                        var x = (((xs[i] + premium) / last) - 1) * 100;
+                                        var x = (((xs[i] + fS.Bid) / last) - 1) * 100;
                                         ys.push(x);
                                     } else if (xs[i] == fS.Strike || xs[i] > fS.Strike) {
-                                        var strike = (((fS.Strike + premium) / last) - 1) * 100;
+                                        var strike = (((fS.Strike + fS.Bid) / last) - 1) * 100;
                                         ys.push(strike);
                                     }
                                 }
@@ -227,12 +185,13 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                         return 1;
                                     }
                                 });
-                                var x = xs[1] - xs[0];
-                                var y = ys[1] - ys[0];
-                                var gap = xs[2] - xs[1];
                                 for (var i = 0; i < xs.length; i++) {
                                     var y = (xs[i] / last - 1) * 100;
-                                    ysR.push(y);
+                                    if (i == 3 && y === ys[3]) { //A try to fixed the "no red" in IE
+                                        ysR.push(y);
+                                    } else {
+                                        ysR.push(y);
+                                    }
                                 }
 
                                 var w = $(window).width();
@@ -244,12 +203,6 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                     chartW = $(svgE).width();
                                 });
 
-                                var minmax = [];
-                                for (var i = 0; i < ysR.length; i++) {
-                                    var y = ys[i] / ysR[i];
-//                                    var t = y * 100;
-                                    minmax.push(y);
-                                }
 
                                 for (var i = 0; i < xs.length; i++) {
                                     eVals.push({x: xs[i], y: ys[i] / 100});
@@ -258,13 +211,15 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 for (var i = 0; i < xs.length; i++) {
                                     rVals.push({x: xs[i], y: ysR[i] / 100});
                                 }
+                                var pVolNum = Math.round(fS.PVol * 100);
                                 var pVol = {
-                                    0: -((fS.PVol) * 2),
-                                    1: -((fS.PVol)),
+                                    0: -(pVolNum * 2),
+                                    1: -(pVolNum),
                                     2: 0,
-                                    3: ((fS.PVol)),
-                                    4: ((fS.PVol) * 2)
+                                    3: (pVolNum),
+                                    4: (pVolNum * 2)
                                 };
+
                                 var tmpH = (chartH) / 5;
                                 var step = Math.round(245 / 5);
                                 var hScale = {
@@ -276,14 +231,31 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                 };
                                 d3.selectAll(".yValue").remove();
                                 for (var i = 0; i < 5; i++) {
-
+//                                    if (i == 3) {
+//                                        d3.select(element.find("svg")[0]).append("text")
+//                                                .classed("yValue", true)
+//                                                .style("text-anchor", "middle")
+//                                                .style("font-size", "12px")
+////                                            .attr("transform", "translate(40," + parseInt(hScale[i] + 5) + ")")
+//                                                .attr("transform", "translate(42," + parseInt(hScale[i] + 3) + ")")
+//                                                .text(-1 * (Math.round(pVol[1] * 100)) + "%");
+//                                    } else if (i == 4) {
+//                                        d3.select(element.find("svg")[0]).append("text")
+//                                                .classed("yValue", true)
+//                                                .style("text-anchor", "middle")
+//                                                .style("font-size", "12px")
+////                                            .attr("transform", "translate(40," + parseInt(hScale[i] + 5) + ")")
+//                                                .attr("transform", "translate(42," + parseInt(hScale[i] + 3) + ")")
+//                                                .text(-1 * (Math.round(pVol[0] * 100)) + "%");
+//                                    } else {
                                     d3.select(element.find("svg")[0]).append("text")
                                             .classed("yValue", true)
                                             .style("text-anchor", "middle")
                                             .style("font-size", "12px")
 //                                            .attr("transform", "translate(40," + parseInt(hScale[i] + 5) + ")")
                                             .attr("transform", "translate(42," + parseInt(hScale[i] + 3) + ")")
-                                            .text(Math.round(pVol[i] * 100) + "%");
+                                            .text(pVol[i] + "%");
+//                                }
                                 }
 
                                 for (var i = 0; i < 6; i++) {
@@ -312,37 +284,35 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                     }
                                 ];
                                 draw(linearData);
-
 //Dynamic calculation.
 
-                                if (last > 50) {
-                                    var tickMarks = [
-                                        (Math.floor(last * (1 - (2 * fS.PVol))) / 10) * 10,
-                                        Math.floor(last * (1 - (fS.PVol))),
-                                        last,
-                                        Math.floor(last * (1 + (fS.PVol))),
-                                        (Math.floor(last * (1 + (2 * fS.PVol))) / 10) * 10
-                                    ];
-                                } else {
-                                    var tickMarks = [
-                                        (Math.floor(last * (1 - (2 * fS.PVol)))),
-                                        Math.floor(last * (1 - (fS.PVol))),
-                                        last,
-                                        Math.ceil(last * (1 + (fS.PVol))),
-                                        (Math.ceil(last * (1 + (2 * fS.PVol))))
-                                    ];
-                                }
+//                                if (last > 50) {
+//                                    var tickMarks = [
+//                                        (Math.floor(last * (1 - (2 * fS.PVol)))),
+//                                        Math.floor(last * (1 - (fS.PVol))),
+//                                        last,
+//                                        Math.floor(last * (1 + (fS.PVol))),
+//                                        (Math.floor(last * (1 + (2 * fS.PVol))))
+//                                    ];
+//                                } else {
+//                                    var tickMarks = [
+//                                        (Math.floor(last * (1 - (2 * fS.PVol)))),
+//                                        Math.floor(last * (1 - (fS.PVol))),
+//                                        last,
+//                                        Math.ceil(last * (1 + (fS.PVol))),
+//                                        (Math.ceil(last * (1 + (2 * fS.PVol))))
+//                                    ];
+//                                }
 
                                 chart.xAxis
                                         .tickValues(tickMarks)
-                                        .tickFormat(function (d) {
+                                        .tickFormat(function (d, i) {
                                             return "$" + d;
                                         });
 //                                    chart.forceX(120, 160);
-
+                            
                                 chart.yAxis
                                         .tickFormat(d3.format(',f'));
-
                                 d3.selectAll(".xValue").remove();
                                 for (var i = 0; i < 5; i++) {
                                     d3.select(element.find("svg")[0]).append("text")
@@ -394,12 +364,18 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                             .attr("x2", chartW - 55)
                                             .attr("y2", hScale[i]);
                                 }
+                                
+                                $(".nv-legend-symbol, .nv-legend-text").click(function(){
+                                   return false; 
+                                });
+                                $(".nv-legend-symbol, .nv-legend-text").dblclick(function(){
+                                   return false; 
+                                });
 
                                 w = w * 0.10;
                                 $timeout(function () {
                                     var ua = window.navigator.userAgent;
                                     var msie = ua.indexOf("MSIE ");
-
                                     if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
                                         $(".takePosition").css("margin-top", "51px");
                                         var bPos = document.querySelectorAll('.nv-point-2')[1];
@@ -416,7 +392,6 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                     d3.select(".ep").remove();
                                     d3.select(".lp").remove();
                                     d3.select(".grad").remove();
-
                                     var tmp = chartW * fS.LossPercentage;
                                     $rootScope.curX = fS.LossPercentage;
                                     d3.select(element.find("svg")[0]).append("line")
@@ -429,14 +404,11 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                             .transition()
                                             .duration(800)
                                             .attr("stroke-dasharray", "5,5");
-
                                     d3.select(element.find("svg")[0]).append("text")
                                             .classed("ep", true)
                                             .style("text-anchor", "start")
                                             .attr("transform", "translate(" + (currentx + 65) + "," + parseFloat(currenty + 36) + 100 + ") rotate(90)")
-                                            .text("$" + (fS.Strike + premium).toFixed(2));
-
-
+                                            .text("$" + (fS.Strike + fS.SmartPrice));
                                     d3.select(element.find("svg")[0]).append("linearGradient")
                                             .classed("grad", true)
                                             .attr("id", "temperature-gradient")
@@ -469,6 +441,8 @@ chartModule.directive("lineChart", ["$rootScope", "$timeout", function ($rootSco
                                             .style("fill", "#fe1313")
                                             .text(parseFloat(fS.LossPercentage * 100).toFixed(2) + "%");
                                     draw(linearData);
+                                    $rootScope.$emit("chartDone", true);
+//                                    $(".loadingView").delay(600).fadeOut(250);
                                 }, 350);
 //                                nv.utils.windowResize(function () {
 //                                    chart.update();
@@ -487,6 +461,14 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
             scope: {data: '=data', position: '=position'},
             link: function (scope, element, attrs) {
                 scope.$watch("data", function (o, n) {
+                    Array.prototype.max = function () {
+                        return Math.max.apply(null, this);
+                    };
+
+                    Array.prototype.min = function () {
+                        return Math.min.apply(null, this);
+                    };
+
                     if (o !== undefined) {
                         angular.forEach(scope.position.positions, function (p) {
                             if (p.stock === $rootScope.stockData.Symbol) {
@@ -495,19 +477,21 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                                 scope.entry = p.entry;
                             }
                         });
-
                         var data = [
                             {key: "PnL",
                                 values: [],
-                                color: "#5d4750"
+//                                color: "#5d4750"
+                                color: "#D0C1C8"
                             }
                         ];
+                        var dataDummy = [];
+
+                        var pnlDummy = [];
 
                         angular.forEach(scope.data, function (d, i) {
                             var date = d.Date;
                             date = date.substring(0, date.length - 2);
                             date = date.substring(6, date.length);
-
 //                                var entry = new Date(scope.entry);
 //                                var fakeDay = (entry.setDate(entry.getDay()) + 24 + (1 * i));
 //                                var fakeMonth = parseInt(entry.getMonth()) + 1;
@@ -519,14 +503,18 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                             var month = entry.getMonth();
                             var year = entry.getFullYear();
                             var time = month + 1 + "/" + parseInt(day) + "/" + year;
-
                             var fixedd = new Date(time);
                             var n = fixedd.setDate(fixedd.getDate() + (1 * i));
+                            var pnl = ((d.LastStockPrice - d.LastOptionPrice) / (scope.osLast - scope.opLast) - 1) * 100;
+                            pnl = (Math.floor(100 * parseFloat((pnl).toFixed(2))) / 100);
 
-                            var pnl = ((((d.LastStockPrice - d.LastOptionPrice) + scope.opLast) / scope.osLast) - 1);
+//                            var productPrice = sAvgPrice - oAvgPrice;
+//                            var currProductPrice = sLast - oLast;
+//                            return parseFloat(((currProductPrice / productPrice))).toFixed(2) + "%";
 
-//                            data[0].values.push({x: n, y: pnl});
-                            data[0].values.push({x: date, y: pnl});
+                            data[0].values.push({x: i, y: pnl});
+                            dataDummy.push(parseInt(date));
+                            pnlDummy.push(pnl);
                         });
 
                         nv.addGraph(function () {
@@ -538,45 +526,76 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                                     .showXAxis(true)
                                     .x(function (d) {
                                         return d.x;
+                                    })
+                                    .y(function (d, i) {
+                                        return d.y;
                                     });
 
-                            chart.xAxis.tickValues(function (d) {
-                                var dateSets = [];
-                                for (var i = 0; i < d[0]['values'].length; i++) {
-                                    dateSets.push(parseInt(d[0]['values'][i]['x']));
-                                }
-                                return dateSets;
-                            });
-
-                            chart.yAxis
-                                    .tickFormat(function (d) {
-                                        return d3.time.format(',.1%');
-                                    });
-
+                            chart.xAxis.tickValues(dataDummy);
                             chart.xAxis
+                                    .ticks(d3.time.days, 1)
                                     .showMaxMin(false)
                                     .tickFormat(function (d) {
                                         return d3.time.format('%x')(new Date(d));
                                     });
 
+                            var selected = [];
+                            var newMin = pnlDummy.min();
+                            newMin = pnlDummy.min() - (newMin * 0.05);
+                            pnlDummy.push(pnlDummy.min() - Math.abs(newMin));
+////                            pnlDummy.push(0);
+                            pnlDummy.sort();
+//
+//                            function isOdd(num) {
+//                                return num % 2;
+//                            }
+////
+                            for (var i = 0; i < pnlDummy.length; i++) {
+                                pnlDummy[i] = Math.round(pnlDummy[i]);
+                            }
+//
+                            var newPnlDummy = [];
+                            $.each(pnlDummy, function (i, el) {
+                                if ($.inArray(el, newPnlDummy) === -1)
+                                    newPnlDummy.push(el);
+                            });
+//
+//                            for (var i = 0; i < newPnlDummy.length; i++) {
+//                                if (isOdd(i) == 0) {
+//                                    newPnlDummy.splice(i, 1);
+//                                }
+//                            }
+
+
+
+//                            chart.forceY([newMin, pnlDummy.max()]);
+//                            chart.yAxis.scale().domain([newMin, pnlDummy.max()]);
+                            chart.y2Axis
+//                                    .showMaxMin(false)
+//                                    .tickValues(newPnlDummy)
+                                    .tickFormat(function (d) {
+                                        return d + "%";
+                                    });
+
                             chart.xAxis.rotateLabels(-45);
+
                             var w = $(element.find("svg")[0]).width();
                             var h = $(element.find("svg")[0]).height();
-
+                            var top = $(element.find("svg")[0]).offset().top;
+                            var left = $(element.find("svg")[0]).offset().left;
 //                                $(document).on("mousemove", element.find("svg")[0], function () {
 //                            $(element.find("svg")[0]).on("mousemove", function () {
 
 
 //                                });
-
-                            chart.yAxis
-                                    .tickValues(function (d) {
-                                        return d;
-                                    })
-                                    .tickFormat(d3.format(',.1%'));
-                            chart.y2Axis
-                                    .tickFormat(d3.format(',.1%'));
-
+//                            chart.forceY([1.15, 1.2]);
+//                            chart.yAxis
+//                                    .tickValues(function (d) {
+//                                        return d;
+//                                    })
+//                                    .tickFormat(d3.format(',.1%'));
+//                            chart.y2Axis
+//                                    .tickFormat(d3.format(',.1%'));
                             d3.select(element.find("svg")[0]).append("text")
                                     .attr("x", w / 2)
                                     .attr("y", h - 10)
@@ -588,18 +607,62 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                                         .call(chart);
                                 nv.utils.windowResize(function () {
                                     chart.update();
+                                    $rootScope.$emit("chartDone", true);
                                 });
                                 return chart;
                             }
                             draw(data);
 
+                            var nvy2 = element.find("svg")[0].querySelector(".nv-y2");
+                            var ticks = nvy2.querySelectorAll(".tick");
+
+//                            angular.forEach(ticks, function (p, i) {
+//                                console.log(p);
+//                                var pnlD = pnlDummy[i];
+//                                var posY = d3.transform(p.getAttribute("transform")).translate[1];
+//                                var posX = d3.transform(p.getAttribute("transform")).translate[0];
+//                                d3.select(element.find("svg")[0]).append("text")
+//                                        .classed("chartPnl", true)
+//                                        .style("text-anchor", "start")
+//                                        .style("font-size", "12px")
+//                                        .attr("transform", "translate(" + (posX + w - 9) + "," + (posY + 34) + ")")
+//                                        .text("%");
+//                                console.log("%");
+//                            });
+
+                            var points = element.find("svg")[0].querySelectorAll(".nv-point");
+                            angular.forEach(points, function (p, i) {
+                                var dateString = new Date(dataDummy[i]);
+                                var day = dateString.getDate();
+                                var month = dateString.getMonth();
+                                var year = dateString.getYear();
+                                var time = month + 1 + "/" + parseInt(day) + "/" + String(year).substring(1);
+//                                var date = d3.time.format('%x')(new Date(dataDummy[i]));
+                                var pos = d3.transform(p.getAttribute("transform")).translate[0];
+                                d3.select(element.find("svg")[0]).append("text")
+                                        .classed("chartDate", true)
+                                        .style("text-anchor", "start")
+                                        .style("font-size", "12px")
+                                        .attr("transform", "translate(" + (pos + 40) + "," + (h - 50) + ") rotate(-45)")
+                                        .text(time);
+                            });
+
+                            var rect = element.find("rect")[0];
+                            $(rect).on("mouseleave", function () {
+                                $(".graphLine").css({"display": "none"});
+                                d3.select(".prc").remove();
+                            });
+
+                            element.on("mouseleave", function () {
+                                $(".graphLine").css({"display": "none"});
+                                d3.select(".prc").remove();
+                            });
+
                             element.on("mousemove", function () {
                                 d3.select(".yLine").remove();
                                 d3.select(".prc").remove();
-
                                 var ua = window.navigator.userAgent;
                                 var msie = ua.indexOf("MSIE ");
-
                                 if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
                                     var bPos = element.find("svg")[0].querySelector('.hover');
                                     var currentx = d3.transform(bPos.getAttribute("transform")).translate[0];
@@ -608,43 +671,35 @@ chartModule.directive("historydChart", ["$rootScope", "$timeout", "$compile", fu
                                     var bPos = $(element.find("svg")[0]).find(".hover");
                                     var currentx = d3.transform(bPos.attr("transform")).translate[0];
                                     var currenty = d3.transform(bPos.attr("transform")).translate[1];
-                                    d3.select(element.find("svg")[0]).append("line")
-                                            .classed("yLine", true)
-                                            .style("stroke", "#ccc")
-                                            .attr("x1", "50")
-                                            .attr("y1", currenty + 30)
-                                            .attr("x2", "602")
-                                            .attr("y2", currenty + 30)
-                                            .transition()
-                                            .duration(800)
-                                            .attr("stroke-dasharray", "0,0");
                                 }
 
                                 var lw = $(".nv-y2").offset().left;
-                                var leftOffset = $(bPos).offset().left;
-                                var getEq = $(bPos).attr("class");
-                                getEq = getEq.split("-")[3];
-                                getEq = getEq.split(" ")[0];
 
-                                var prc = ((data[0].values[getEq].y) * 100).toFixed(2);
-                                var date = new Date(data[0].values[getEq].x);
+                                if (element.find("svg")[0].querySelector('.hover')) {
+                                    $(".graphLine").css({"display": "block", "width": w - 86 + "px", "top": currenty + top + 29 + "px", "left": left + 50 + "px"});
+                                    var leftOffset = $(bPos).offset().left;
+                                    var getEq = $(bPos).attr("class");
+                                    getEq = getEq.split("-")[3];
+                                    getEq = getEq.split(" ")[0];
+                                    var prc = ((data[0].values[getEq].y));
+                                    var date = new Date(data[0].values[getEq].x);
 
-//                                var currentx = d3.transform(bPos.attr("transform")).translate[0];
-//                                var currenty = d3.transform(bPos.attr("transform")).translate[1];
+                                    if (lw == leftOffset || lw - leftOffset < 5) {
+                                        currentx = currentx - 65;
+                                    }
 
-                                if (lw == leftOffset || lw - leftOffset < 5) {
-                                    currentx = currentx - 65;
+                                    d3.select(element.find("svg")[0]).append("text")
+                                            .classed("prc", true)
+                                            .attr("x", currentx + 80)
+                                            .attr("y", currenty + 25)
+                                            .style({"text-anchor": "middle", "font-weight": "bold"})
+                                            .text(prc + "%");
                                 }
-
-                                d3.select(element.find("svg")[0]).append("text")
-                                        .classed("prc", true)
-                                        .attr("x", currentx + 80)
-                                        .attr("y", currenty + 25)
-                                        .style("text-anchor", "middle")
-                                        .text(prc + "%");
                             });
+                            $rootScope.$emit("chartDone", true);
+//                            $(".loadingView").delay(600).fadeOut(250);
+                            return chart;
                         });
-
 //                        $timeout(function () {
 //                            draw(data);
 //                        }, 400);
